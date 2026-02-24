@@ -1,0 +1,32 @@
+{
+  "name": "dingobet",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev:api": "pnpm --filter dingobet-api dev",
+    "dev:web": "pnpm --filter dingobet-web dev",
+    "build:api": "pnpm --filter dingobet-api build",
+    "build:web": "pnpm --filter dingobet-web build",
+    "db:up": "docker compose up -d postgres redis",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter dingobet-api db:migrate",
+    "db:seed": "pnpm --filter dingobet-api db:seed",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "esbuild",
+      "prisma",
+      "sharp",
+      "msgpackr-extract",
+      "unrs-resolver"
+    ]
+  }
+}
