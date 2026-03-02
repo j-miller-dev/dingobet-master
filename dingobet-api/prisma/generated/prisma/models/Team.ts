@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Team
@@ -20,27 +20,17 @@ export type TeamModel = runtime.Types.Result.DefaultSelection<Prisma.$TeamPayloa
 
 export type AggregateTeam = {
   _count: TeamCountAggregateOutputType | null
-  _avg: TeamAvgAggregateOutputType | null
-  _sum: TeamSumAggregateOutputType | null
   _min: TeamMinAggregateOutputType | null
   _max: TeamMaxAggregateOutputType | null
 }
 
-export type TeamAvgAggregateOutputType = {
-  id: number | null
-}
-
-export type TeamSumAggregateOutputType = {
-  id: number | null
-}
-
 export type TeamMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
 }
 
 export type TeamMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   name: string | null
 }
 
@@ -50,14 +40,6 @@ export type TeamCountAggregateOutputType = {
   _all: number
 }
 
-
-export type TeamAvgAggregateInputType = {
-  id?: true
-}
-
-export type TeamSumAggregateInputType = {
-  id?: true
-}
 
 export type TeamMinAggregateInputType = {
   id?: true
@@ -113,18 +95,6 @@ export type TeamAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: TeamAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: TeamSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: TeamMinAggregateInputType
@@ -155,18 +125,14 @@ export type TeamGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: TeamCountAggregateInputType | true
-  _avg?: TeamAvgAggregateInputType
-  _sum?: TeamSumAggregateInputType
   _min?: TeamMinAggregateInputType
   _max?: TeamMaxAggregateInputType
 }
 
 export type TeamGroupByOutputType = {
-  id: number
+  id: string
   name: string
   _count: TeamCountAggregateOutputType | null
-  _avg: TeamAvgAggregateOutputType | null
-  _sum: TeamSumAggregateOutputType | null
   _min: TeamMinAggregateOutputType | null
   _max: TeamMaxAggregateOutputType | null
 }
@@ -190,7 +156,7 @@ export type TeamWhereInput = {
   AND?: Prisma.TeamWhereInput | Prisma.TeamWhereInput[]
   OR?: Prisma.TeamWhereInput[]
   NOT?: Prisma.TeamWhereInput | Prisma.TeamWhereInput[]
-  id?: Prisma.IntFilter<"Team"> | number
+  id?: Prisma.StringFilter<"Team"> | string
   name?: Prisma.StringFilter<"Team"> | string
   homeEvents?: Prisma.EventListRelationFilter
   awayEvents?: Prisma.EventListRelationFilter
@@ -204,7 +170,7 @@ export type TeamOrderByWithRelationInput = {
 }
 
 export type TeamWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   name?: string
   AND?: Prisma.TeamWhereInput | Prisma.TeamWhereInput[]
   OR?: Prisma.TeamWhereInput[]
@@ -217,67 +183,64 @@ export type TeamOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   _count?: Prisma.TeamCountOrderByAggregateInput
-  _avg?: Prisma.TeamAvgOrderByAggregateInput
   _max?: Prisma.TeamMaxOrderByAggregateInput
   _min?: Prisma.TeamMinOrderByAggregateInput
-  _sum?: Prisma.TeamSumOrderByAggregateInput
 }
 
 export type TeamScalarWhereWithAggregatesInput = {
   AND?: Prisma.TeamScalarWhereWithAggregatesInput | Prisma.TeamScalarWhereWithAggregatesInput[]
   OR?: Prisma.TeamScalarWhereWithAggregatesInput[]
   NOT?: Prisma.TeamScalarWhereWithAggregatesInput | Prisma.TeamScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Team"> | number
+  id?: Prisma.StringWithAggregatesFilter<"Team"> | string
   name?: Prisma.StringWithAggregatesFilter<"Team"> | string
 }
 
 export type TeamCreateInput = {
+  id?: string
   name: string
   homeEvents?: Prisma.EventCreateNestedManyWithoutHomeTeamInput
   awayEvents?: Prisma.EventCreateNestedManyWithoutAwayTeamInput
 }
 
 export type TeamUncheckedCreateInput = {
-  id?: number
+  id?: string
   name: string
   homeEvents?: Prisma.EventUncheckedCreateNestedManyWithoutHomeTeamInput
   awayEvents?: Prisma.EventUncheckedCreateNestedManyWithoutAwayTeamInput
 }
 
 export type TeamUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   homeEvents?: Prisma.EventUpdateManyWithoutHomeTeamNestedInput
   awayEvents?: Prisma.EventUpdateManyWithoutAwayTeamNestedInput
 }
 
 export type TeamUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   homeEvents?: Prisma.EventUncheckedUpdateManyWithoutHomeTeamNestedInput
   awayEvents?: Prisma.EventUncheckedUpdateManyWithoutAwayTeamNestedInput
 }
 
 export type TeamCreateManyInput = {
-  id?: number
+  id?: string
   name: string
 }
 
 export type TeamUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TeamUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type TeamCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-}
-
-export type TeamAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
 }
 
 export type TeamMaxOrderByAggregateInput = {
@@ -288,10 +251,6 @@ export type TeamMaxOrderByAggregateInput = {
 export type TeamMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
-}
-
-export type TeamSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
 }
 
 export type TeamScalarRelationFilter = {
@@ -328,12 +287,13 @@ export type TeamUpdateOneRequiredWithoutAwayEventsNestedInput = {
 }
 
 export type TeamCreateWithoutHomeEventsInput = {
+  id?: string
   name: string
   awayEvents?: Prisma.EventCreateNestedManyWithoutAwayTeamInput
 }
 
 export type TeamUncheckedCreateWithoutHomeEventsInput = {
-  id?: number
+  id?: string
   name: string
   awayEvents?: Prisma.EventUncheckedCreateNestedManyWithoutAwayTeamInput
 }
@@ -344,12 +304,13 @@ export type TeamCreateOrConnectWithoutHomeEventsInput = {
 }
 
 export type TeamCreateWithoutAwayEventsInput = {
+  id?: string
   name: string
   homeEvents?: Prisma.EventCreateNestedManyWithoutHomeTeamInput
 }
 
 export type TeamUncheckedCreateWithoutAwayEventsInput = {
-  id?: number
+  id?: string
   name: string
   homeEvents?: Prisma.EventUncheckedCreateNestedManyWithoutHomeTeamInput
 }
@@ -371,12 +332,13 @@ export type TeamUpdateToOneWithWhereWithoutHomeEventsInput = {
 }
 
 export type TeamUpdateWithoutHomeEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   awayEvents?: Prisma.EventUpdateManyWithoutAwayTeamNestedInput
 }
 
 export type TeamUncheckedUpdateWithoutHomeEventsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   awayEvents?: Prisma.EventUncheckedUpdateManyWithoutAwayTeamNestedInput
 }
@@ -393,12 +355,13 @@ export type TeamUpdateToOneWithWhereWithoutAwayEventsInput = {
 }
 
 export type TeamUpdateWithoutAwayEventsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   homeEvents?: Prisma.EventUpdateManyWithoutHomeTeamNestedInput
 }
 
 export type TeamUncheckedUpdateWithoutAwayEventsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   homeEvents?: Prisma.EventUncheckedUpdateManyWithoutHomeTeamNestedInput
 }
@@ -482,7 +445,7 @@ export type $TeamPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     awayEvents: Prisma.$EventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     name: string
   }, ExtArgs["result"]["team"]>
   composites: {}
@@ -909,7 +872,7 @@ export interface Prisma__TeamClient<T, Null = never, ExtArgs extends runtime.Typ
  * Fields of the Team model
  */
 export interface TeamFieldRefs {
-  readonly id: Prisma.FieldRef<"Team", 'Int'>
+  readonly id: Prisma.FieldRef<"Team", 'String'>
   readonly name: Prisma.FieldRef<"Team", 'String'>
 }
     

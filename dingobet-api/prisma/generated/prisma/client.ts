@@ -16,19 +16,21 @@ import { fileURLToPath } from 'node:url'
 globalThis['__dirname'] = path.dirname(fileURLToPath(import.meta.url))
 
 import * as runtime from "@prisma/client/runtime/client"
-import * as $Enums from "./enums"
-import * as $Class from "./internal/class"
-import * as Prisma from "./internal/prismaNamespace"
+import * as $Enums from "./enums.js"
+import * as $Class from "./internal/class.js"
+import * as Prisma from "./internal/prismaNamespace.js"
 
-export * as $Enums from './enums'
-export * from "./enums"
+export * as $Enums from './enums.js'
+export * from "./enums.js"
 /**
  * ## Prisma Client
  * 
  * Type-safe database client for TypeScript
  * @example
  * ```
- * const prisma = new PrismaClient()
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```
@@ -45,10 +47,10 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
- * Model RefreshToken
+ * Model Session
  * 
  */
-export type RefreshToken = Prisma.RefreshTokenModel
+export type Session = Prisma.SessionModel
 /**
  * Model Wallet
  * 
@@ -65,6 +67,11 @@ export type Transaction = Prisma.TransactionModel
  */
 export type Sport = Prisma.SportModel
 /**
+ * Model FavouriteSport
+ * 
+ */
+export type FavouriteSport = Prisma.FavouriteSportModel
+/**
  * Model Team
  * 
  */
@@ -75,22 +82,22 @@ export type Team = Prisma.TeamModel
  */
 export type Event = Prisma.EventModel
 /**
- * Model Market
+ * Model OddsSnapshot
  * 
  */
-export type Market = Prisma.MarketModel
-/**
- * Model Outcome
- * 
- */
-export type Outcome = Prisma.OutcomeModel
+export type OddsSnapshot = Prisma.OddsSnapshotModel
 /**
  * Model Bet
  * 
  */
 export type Bet = Prisma.BetModel
 /**
- * Model BetSelection
+ * Model BetLeg
  * 
  */
-export type BetSelection = Prisma.BetSelectionModel
+export type BetLeg = Prisma.BetLegModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

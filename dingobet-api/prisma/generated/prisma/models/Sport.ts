@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Sport
@@ -20,87 +20,69 @@ export type SportModel = runtime.Types.Result.DefaultSelection<Prisma.$SportPayl
 
 export type AggregateSport = {
   _count: SportCountAggregateOutputType | null
-  _avg: SportAvgAggregateOutputType | null
-  _sum: SportSumAggregateOutputType | null
   _min: SportMinAggregateOutputType | null
   _max: SportMaxAggregateOutputType | null
 }
 
-export type SportAvgAggregateOutputType = {
-  id: number | null
-}
-
-export type SportSumAggregateOutputType = {
-  id: number | null
-}
-
 export type SportMinAggregateOutputType = {
-  id: number | null
-  key: string | null
+  id: string | null
   group: string | null
   title: string | null
   description: string | null
-  active: boolean | null
+  isActive: boolean | null
+  iconUrl: string | null
   hasOutrights: boolean | null
 }
 
 export type SportMaxAggregateOutputType = {
-  id: number | null
-  key: string | null
+  id: string | null
   group: string | null
   title: string | null
   description: string | null
-  active: boolean | null
+  isActive: boolean | null
+  iconUrl: string | null
   hasOutrights: boolean | null
 }
 
 export type SportCountAggregateOutputType = {
   id: number
-  key: number
   group: number
   title: number
   description: number
-  active: number
+  isActive: number
+  iconUrl: number
   hasOutrights: number
   _all: number
 }
 
 
-export type SportAvgAggregateInputType = {
-  id?: true
-}
-
-export type SportSumAggregateInputType = {
-  id?: true
-}
-
 export type SportMinAggregateInputType = {
   id?: true
-  key?: true
   group?: true
   title?: true
   description?: true
-  active?: true
+  isActive?: true
+  iconUrl?: true
   hasOutrights?: true
 }
 
 export type SportMaxAggregateInputType = {
   id?: true
-  key?: true
   group?: true
   title?: true
   description?: true
-  active?: true
+  isActive?: true
+  iconUrl?: true
   hasOutrights?: true
 }
 
 export type SportCountAggregateInputType = {
   id?: true
-  key?: true
   group?: true
   title?: true
   description?: true
-  active?: true
+  isActive?: true
+  iconUrl?: true
   hasOutrights?: true
   _all?: true
 }
@@ -143,18 +125,6 @@ export type SportAggregateArgs<ExtArgs extends runtime.Types.Extensions.Internal
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
-   * Select which fields to average
-  **/
-  _avg?: SportAvgAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
-   * Select which fields to sum
-  **/
-  _sum?: SportSumAggregateInputType
-  /**
-   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   * 
    * Select which fields to find the minimum value
   **/
   _min?: SportMinAggregateInputType
@@ -185,23 +155,19 @@ export type SportGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   _count?: SportCountAggregateInputType | true
-  _avg?: SportAvgAggregateInputType
-  _sum?: SportSumAggregateInputType
   _min?: SportMinAggregateInputType
   _max?: SportMaxAggregateInputType
 }
 
 export type SportGroupByOutputType = {
-  id: number
-  key: string
-  group: string
+  id: string
+  group: string | null
   title: string
   description: string | null
-  active: boolean
+  isActive: boolean
+  iconUrl: string | null
   hasOutrights: boolean
   _count: SportCountAggregateOutputType | null
-  _avg: SportAvgAggregateOutputType | null
-  _sum: SportSumAggregateOutputType | null
   _min: SportMinAggregateOutputType | null
   _max: SportMaxAggregateOutputType | null
 }
@@ -225,176 +191,176 @@ export type SportWhereInput = {
   AND?: Prisma.SportWhereInput | Prisma.SportWhereInput[]
   OR?: Prisma.SportWhereInput[]
   NOT?: Prisma.SportWhereInput | Prisma.SportWhereInput[]
-  id?: Prisma.IntFilter<"Sport"> | number
-  key?: Prisma.StringFilter<"Sport"> | string
-  group?: Prisma.StringFilter<"Sport"> | string
+  id?: Prisma.StringFilter<"Sport"> | string
+  group?: Prisma.StringNullableFilter<"Sport"> | string | null
   title?: Prisma.StringFilter<"Sport"> | string
   description?: Prisma.StringNullableFilter<"Sport"> | string | null
-  active?: Prisma.BoolFilter<"Sport"> | boolean
+  isActive?: Prisma.BoolFilter<"Sport"> | boolean
+  iconUrl?: Prisma.StringNullableFilter<"Sport"> | string | null
   hasOutrights?: Prisma.BoolFilter<"Sport"> | boolean
+  favourites?: Prisma.FavouriteSportListRelationFilter
   events?: Prisma.EventListRelationFilter
 }
 
 export type SportOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  key?: Prisma.SortOrder
-  group?: Prisma.SortOrder
+  group?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  active?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   hasOutrights?: Prisma.SortOrder
+  favourites?: Prisma.FavouriteSportOrderByRelationAggregateInput
   events?: Prisma.EventOrderByRelationAggregateInput
 }
 
 export type SportWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
-  key?: string
+  id?: string
   AND?: Prisma.SportWhereInput | Prisma.SportWhereInput[]
   OR?: Prisma.SportWhereInput[]
   NOT?: Prisma.SportWhereInput | Prisma.SportWhereInput[]
-  group?: Prisma.StringFilter<"Sport"> | string
+  group?: Prisma.StringNullableFilter<"Sport"> | string | null
   title?: Prisma.StringFilter<"Sport"> | string
   description?: Prisma.StringNullableFilter<"Sport"> | string | null
-  active?: Prisma.BoolFilter<"Sport"> | boolean
+  isActive?: Prisma.BoolFilter<"Sport"> | boolean
+  iconUrl?: Prisma.StringNullableFilter<"Sport"> | string | null
   hasOutrights?: Prisma.BoolFilter<"Sport"> | boolean
+  favourites?: Prisma.FavouriteSportListRelationFilter
   events?: Prisma.EventListRelationFilter
-}, "id" | "key">
+}, "id">
 
 export type SportOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  key?: Prisma.SortOrder
-  group?: Prisma.SortOrder
+  group?: Prisma.SortOrderInput | Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
-  active?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   hasOutrights?: Prisma.SortOrder
   _count?: Prisma.SportCountOrderByAggregateInput
-  _avg?: Prisma.SportAvgOrderByAggregateInput
   _max?: Prisma.SportMaxOrderByAggregateInput
   _min?: Prisma.SportMinOrderByAggregateInput
-  _sum?: Prisma.SportSumOrderByAggregateInput
 }
 
 export type SportScalarWhereWithAggregatesInput = {
   AND?: Prisma.SportScalarWhereWithAggregatesInput | Prisma.SportScalarWhereWithAggregatesInput[]
   OR?: Prisma.SportScalarWhereWithAggregatesInput[]
   NOT?: Prisma.SportScalarWhereWithAggregatesInput | Prisma.SportScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Sport"> | number
-  key?: Prisma.StringWithAggregatesFilter<"Sport"> | string
-  group?: Prisma.StringWithAggregatesFilter<"Sport"> | string
+  id?: Prisma.StringWithAggregatesFilter<"Sport"> | string
+  group?: Prisma.StringNullableWithAggregatesFilter<"Sport"> | string | null
   title?: Prisma.StringWithAggregatesFilter<"Sport"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Sport"> | string | null
-  active?: Prisma.BoolWithAggregatesFilter<"Sport"> | boolean
+  isActive?: Prisma.BoolWithAggregatesFilter<"Sport"> | boolean
+  iconUrl?: Prisma.StringNullableWithAggregatesFilter<"Sport"> | string | null
   hasOutrights?: Prisma.BoolWithAggregatesFilter<"Sport"> | boolean
 }
 
 export type SportCreateInput = {
-  key: string
-  group: string
+  id: string
+  group?: string | null
   title: string
   description?: string | null
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: string | null
   hasOutrights?: boolean
+  favourites?: Prisma.FavouriteSportCreateNestedManyWithoutSportInput
   events?: Prisma.EventCreateNestedManyWithoutSportInput
 }
 
 export type SportUncheckedCreateInput = {
-  id?: number
-  key: string
-  group: string
+  id: string
+  group?: string | null
   title: string
   description?: string | null
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: string | null
   hasOutrights?: boolean
+  favourites?: Prisma.FavouriteSportUncheckedCreateNestedManyWithoutSportInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutSportInput
 }
 
 export type SportUpdateInput = {
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  favourites?: Prisma.FavouriteSportUpdateManyWithoutSportNestedInput
   events?: Prisma.EventUpdateManyWithoutSportNestedInput
 }
 
 export type SportUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  favourites?: Prisma.FavouriteSportUncheckedUpdateManyWithoutSportNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutSportNestedInput
 }
 
 export type SportCreateManyInput = {
-  id?: number
-  key: string
-  group: string
+  id: string
+  group?: string | null
   title: string
   description?: string | null
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: string | null
   hasOutrights?: boolean
 }
 
 export type SportUpdateManyMutationInput = {
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type SportUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type SportCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  key?: Prisma.SortOrder
   group?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   hasOutrights?: Prisma.SortOrder
-}
-
-export type SportAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
 }
 
 export type SportMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  key?: Prisma.SortOrder
   group?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   hasOutrights?: Prisma.SortOrder
 }
 
 export type SportMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  key?: Prisma.SortOrder
   group?: Prisma.SortOrder
   title?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  active?: Prisma.SortOrder
+  isActive?: Prisma.SortOrder
+  iconUrl?: Prisma.SortOrder
   hasOutrights?: Prisma.SortOrder
-}
-
-export type SportSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
 }
 
 export type SportScalarRelationFilter = {
@@ -402,8 +368,18 @@ export type SportScalarRelationFilter = {
   isNot?: Prisma.SportWhereInput
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
+export type SportCreateNestedOneWithoutFavouritesInput = {
+  create?: Prisma.XOR<Prisma.SportCreateWithoutFavouritesInput, Prisma.SportUncheckedCreateWithoutFavouritesInput>
+  connectOrCreate?: Prisma.SportCreateOrConnectWithoutFavouritesInput
+  connect?: Prisma.SportWhereUniqueInput
+}
+
+export type SportUpdateOneRequiredWithoutFavouritesNestedInput = {
+  create?: Prisma.XOR<Prisma.SportCreateWithoutFavouritesInput, Prisma.SportUncheckedCreateWithoutFavouritesInput>
+  connectOrCreate?: Prisma.SportCreateOrConnectWithoutFavouritesInput
+  upsert?: Prisma.SportUpsertWithoutFavouritesInput
+  connect?: Prisma.SportWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SportUpdateToOneWithWhereWithoutFavouritesInput, Prisma.SportUpdateWithoutFavouritesInput>, Prisma.SportUncheckedUpdateWithoutFavouritesInput>
 }
 
 export type SportCreateNestedOneWithoutEventsInput = {
@@ -420,23 +396,86 @@ export type SportUpdateOneRequiredWithoutEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SportUpdateToOneWithWhereWithoutEventsInput, Prisma.SportUpdateWithoutEventsInput>, Prisma.SportUncheckedUpdateWithoutEventsInput>
 }
 
-export type SportCreateWithoutEventsInput = {
-  key: string
-  group: string
+export type SportCreateWithoutFavouritesInput = {
+  id: string
+  group?: string | null
   title: string
   description?: string | null
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: string | null
   hasOutrights?: boolean
+  events?: Prisma.EventCreateNestedManyWithoutSportInput
+}
+
+export type SportUncheckedCreateWithoutFavouritesInput = {
+  id: string
+  group?: string | null
+  title: string
+  description?: string | null
+  isActive?: boolean
+  iconUrl?: string | null
+  hasOutrights?: boolean
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutSportInput
+}
+
+export type SportCreateOrConnectWithoutFavouritesInput = {
+  where: Prisma.SportWhereUniqueInput
+  create: Prisma.XOR<Prisma.SportCreateWithoutFavouritesInput, Prisma.SportUncheckedCreateWithoutFavouritesInput>
+}
+
+export type SportUpsertWithoutFavouritesInput = {
+  update: Prisma.XOR<Prisma.SportUpdateWithoutFavouritesInput, Prisma.SportUncheckedUpdateWithoutFavouritesInput>
+  create: Prisma.XOR<Prisma.SportCreateWithoutFavouritesInput, Prisma.SportUncheckedCreateWithoutFavouritesInput>
+  where?: Prisma.SportWhereInput
+}
+
+export type SportUpdateToOneWithWhereWithoutFavouritesInput = {
+  where?: Prisma.SportWhereInput
+  data: Prisma.XOR<Prisma.SportUpdateWithoutFavouritesInput, Prisma.SportUncheckedUpdateWithoutFavouritesInput>
+}
+
+export type SportUpdateWithoutFavouritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  events?: Prisma.EventUpdateManyWithoutSportNestedInput
+}
+
+export type SportUncheckedUpdateWithoutFavouritesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  events?: Prisma.EventUncheckedUpdateManyWithoutSportNestedInput
+}
+
+export type SportCreateWithoutEventsInput = {
+  id: string
+  group?: string | null
+  title: string
+  description?: string | null
+  isActive?: boolean
+  iconUrl?: string | null
+  hasOutrights?: boolean
+  favourites?: Prisma.FavouriteSportCreateNestedManyWithoutSportInput
 }
 
 export type SportUncheckedCreateWithoutEventsInput = {
-  id?: number
-  key: string
-  group: string
+  id: string
+  group?: string | null
   title: string
   description?: string | null
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: string | null
   hasOutrights?: boolean
+  favourites?: Prisma.FavouriteSportUncheckedCreateNestedManyWithoutSportInput
 }
 
 export type SportCreateOrConnectWithoutEventsInput = {
@@ -456,22 +495,25 @@ export type SportUpdateToOneWithWhereWithoutEventsInput = {
 }
 
 export type SportUpdateWithoutEventsInput = {
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  favourites?: Prisma.FavouriteSportUpdateManyWithoutSportNestedInput
 }
 
 export type SportUncheckedUpdateWithoutEventsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  key?: Prisma.StringFieldUpdateOperationsInput | string
-  group?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  group?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   title?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  iconUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hasOutrights?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  favourites?: Prisma.FavouriteSportUncheckedUpdateManyWithoutSportNestedInput
 }
 
 
@@ -480,10 +522,12 @@ export type SportUncheckedUpdateWithoutEventsInput = {
  */
 
 export type SportCountOutputType = {
+  favourites: number
   events: number
 }
 
 export type SportCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favourites?: boolean | SportCountOutputTypeCountFavouritesArgs
   events?: boolean | SportCountOutputTypeCountEventsArgs
 }
 
@@ -500,6 +544,13 @@ export type SportCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * SportCountOutputType without action
  */
+export type SportCountOutputTypeCountFavouritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FavouriteSportWhereInput
+}
+
+/**
+ * SportCountOutputType without action
+ */
 export type SportCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EventWhereInput
 }
@@ -507,48 +558,50 @@ export type SportCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.Ex
 
 export type SportSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  key?: boolean
   group?: boolean
   title?: boolean
   description?: boolean
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: boolean
   hasOutrights?: boolean
+  favourites?: boolean | Prisma.Sport$favouritesArgs<ExtArgs>
   events?: boolean | Prisma.Sport$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.SportCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["sport"]>
 
 export type SportSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  key?: boolean
   group?: boolean
   title?: boolean
   description?: boolean
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: boolean
   hasOutrights?: boolean
 }, ExtArgs["result"]["sport"]>
 
 export type SportSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  key?: boolean
   group?: boolean
   title?: boolean
   description?: boolean
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: boolean
   hasOutrights?: boolean
 }, ExtArgs["result"]["sport"]>
 
 export type SportSelectScalar = {
   id?: boolean
-  key?: boolean
   group?: boolean
   title?: boolean
   description?: boolean
-  active?: boolean
+  isActive?: boolean
+  iconUrl?: boolean
   hasOutrights?: boolean
 }
 
-export type SportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "group" | "title" | "description" | "active" | "hasOutrights", ExtArgs["result"]["sport"]>
+export type SportOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "group" | "title" | "description" | "isActive" | "iconUrl" | "hasOutrights", ExtArgs["result"]["sport"]>
 export type SportInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  favourites?: boolean | Prisma.Sport$favouritesArgs<ExtArgs>
   events?: boolean | Prisma.Sport$eventsArgs<ExtArgs>
   _count?: boolean | Prisma.SportCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -558,15 +611,16 @@ export type SportIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $SportPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Sport"
   objects: {
+    favourites: Prisma.$FavouriteSportPayload<ExtArgs>[]
     events: Prisma.$EventPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
-    key: string
-    group: string
+    id: string
+    group: string | null
     title: string
     description: string | null
-    active: boolean
+    isActive: boolean
+    iconUrl: string | null
     hasOutrights: boolean
   }, ExtArgs["result"]["sport"]>
   composites: {}
@@ -962,6 +1016,7 @@ readonly fields: SportFieldRefs;
  */
 export interface Prisma__SportClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  favourites<T extends Prisma.Sport$favouritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sport$favouritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FavouriteSportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   events<T extends Prisma.Sport$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Sport$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -992,12 +1047,12 @@ export interface Prisma__SportClient<T, Null = never, ExtArgs extends runtime.Ty
  * Fields of the Sport model
  */
 export interface SportFieldRefs {
-  readonly id: Prisma.FieldRef<"Sport", 'Int'>
-  readonly key: Prisma.FieldRef<"Sport", 'String'>
+  readonly id: Prisma.FieldRef<"Sport", 'String'>
   readonly group: Prisma.FieldRef<"Sport", 'String'>
   readonly title: Prisma.FieldRef<"Sport", 'String'>
   readonly description: Prisma.FieldRef<"Sport", 'String'>
-  readonly active: Prisma.FieldRef<"Sport", 'Boolean'>
+  readonly isActive: Prisma.FieldRef<"Sport", 'Boolean'>
+  readonly iconUrl: Prisma.FieldRef<"Sport", 'String'>
   readonly hasOutrights: Prisma.FieldRef<"Sport", 'Boolean'>
 }
     
@@ -1384,6 +1439,30 @@ export type SportDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Limit how many Sports to delete.
    */
   limit?: number
+}
+
+/**
+ * Sport.favourites
+ */
+export type Sport$favouritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FavouriteSport
+   */
+  select?: Prisma.FavouriteSportSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FavouriteSport
+   */
+  omit?: Prisma.FavouriteSportOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FavouriteSportInclude<ExtArgs> | null
+  where?: Prisma.FavouriteSportWhereInput
+  orderBy?: Prisma.FavouriteSportOrderByWithRelationInput | Prisma.FavouriteSportOrderByWithRelationInput[]
+  cursor?: Prisma.FavouriteSportWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FavouriteSportScalarFieldEnum | Prisma.FavouriteSportScalarFieldEnum[]
 }
 
 /**

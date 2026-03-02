@@ -11,10 +11,21 @@
 
 export const Role = {
   USER: 'USER',
-  ADMIN: 'ADMIN'
+  ADMIN: 'ADMIN',
+  SUPER_ADMIN: 'SUPER_ADMIN'
 } as const
 
 export type Role = (typeof Role)[keyof typeof Role]
+
+
+export const KycStatus = {
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED'
+} as const
+
+export type KycStatus = (typeof KycStatus)[keyof typeof KycStatus]
 
 
 export const TransactionType = {
@@ -22,62 +33,82 @@ export const TransactionType = {
   WITHDRAWAL: 'WITHDRAWAL',
   BET_PLACED: 'BET_PLACED',
   BET_WON: 'BET_WON',
-  BET_REFUND: 'BET_REFUND'
+  BET_REFUND: 'BET_REFUND',
+  BONUS: 'BONUS'
 } as const
 
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType]
 
 
-export const TransactionStatus = {
+export const PaymentStatus = {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
-  FAILED: 'FAILED'
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED'
 } as const
 
-export type TransactionStatus = (typeof TransactionStatus)[keyof typeof TransactionStatus]
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
 
 
 export const EventStatus = {
   UPCOMING: 'UPCOMING',
   LIVE: 'LIVE',
   COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  POSTPONED: 'POSTPONED'
 } as const
 
 export type EventStatus = (typeof EventStatus)[keyof typeof EventStatus]
 
 
-export const MarketType = {
-  H2H: 'H2H',
-  SPREADS: 'SPREADS',
-  TOTALS: 'TOTALS'
+export const EventResult = {
+  HOME_WIN: 'HOME_WIN',
+  AWAY_WIN: 'AWAY_WIN',
+  DRAW: 'DRAW'
 } as const
 
-export type MarketType = (typeof MarketType)[keyof typeof MarketType]
+export type EventResult = (typeof EventResult)[keyof typeof EventResult]
+
+
+export const NotificationType = {
+  BET_SETTLED: 'BET_SETTLED',
+  DEPOSIT_COMPLETE: 'DEPOSIT_COMPLETE',
+  WITHDRAWAL_COMPLETE: 'WITHDRAWAL_COMPLETE',
+  PROMO: 'PROMO',
+  KYC_APPROVED: 'KYC_APPROVED',
+  KYC_REJECTED: 'KYC_REJECTED'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
 
 
 export const BetType = {
   SINGLE: 'SINGLE',
-  MULTI: 'MULTI'
+  MULTI: 'MULTI',
+  SYSTEM: 'SYSTEM'
 } as const
 
 export type BetType = (typeof BetType)[keyof typeof BetType]
+
+
+export const LegStatus = {
+  PENDING: 'PENDING',
+  WON: 'WON',
+  LOST: 'LOST',
+  VOID: 'VOID',
+  PUSHED: 'PUSHED'
+} as const
+
+export type LegStatus = (typeof LegStatus)[keyof typeof LegStatus]
 
 
 export const BetStatus = {
   PENDING: 'PENDING',
   WON: 'WON',
   LOST: 'LOST',
-  CANCELLED: 'CANCELLED'
+  VOID: 'VOID',
+  CASHED_OUT: 'CASHED_OUT',
+  PARTIALLY_SETTLED: 'PARTIALLY_SETTLED'
 } as const
 
 export type BetStatus = (typeof BetStatus)[keyof typeof BetStatus]
-
-
-export const SelectionResult = {
-  WON: 'WON',
-  LOST: 'LOST',
-  CANCELLED: 'CANCELLED'
-} as const
-
-export type SelectionResult = (typeof SelectionResult)[keyof typeof SelectionResult]

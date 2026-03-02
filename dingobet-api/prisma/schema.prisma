@@ -15,6 +15,14 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  SUPER_ADMIN
+}
+
+enum KycStatus {
+  PENDING
+  SUBMITTED
+  VERIFIED
+  REJECTED
 }
 
 enum TransactionType {
@@ -23,12 +31,14 @@ enum TransactionType {
   BET_PLACED
   BET_WON
   BET_REFUND
+  BONUS
 }
 
-enum TransactionStatus {
+enum PaymentStatus {
   PENDING
   COMPLETED
   FAILED
+  CANCELLED
 }
 
 enum EventStatus {
@@ -36,173 +46,261 @@ enum EventStatus {
   LIVE
   COMPLETED
   CANCELLED
+  POSTPONED
 }
 
-enum MarketType {
-  H2H
-  SPREADS
-  TOTALS
+enum EventResult {
+  HOME_WIN
+  AWAY_WIN
+  DRAW
 }
+
+enum NotificationType {
+  BET_SETTLED
+  DEPOSIT_COMPLETE
+  WITHDRAWAL_COMPLETE
+  PROMO
+  KYC_APPROVED
+  KYC_REJECTED
+}
+
 
 enum BetType {
   SINGLE
-  MULTI
+  MULTI // accumulator or pirate parlay
+  SYSTEM // system bet (e.g. 2-from-3)
+}
+
+enum LegStatus {
+  PENDING
+  WON
+  LOST
+  VOID
+  PUSHED
 }
 
 enum BetStatus {
   PENDING
   WON
   LOST
-  CANCELLED
+  VOID
+  CASHED_OUT
+  PARTIALLY_SETTLED
 }
 
-enum SelectionResult {
-  WON
-  LOST
-  CANCELLED
-}
 
 // Models
-// GROUP 1: Auth
+// ─── USER & AUTH ───────────────────────────────────────
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
-  username      String         @unique
-  passwordHash  String?
-  name          String?
-  role          Role           @default(USER)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  refreshTokens RefreshToken[]
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String    @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  dateOfBirth  DateTime?
+  phone        String?
+  avatarUrl    String?
+  isActive     Boolean   @default(true)
+  kycStatus    KycStatus @default(PENDING)
+  role         Role      @default(USER)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
   wallet        Wallet?
   bets          Bet[]
+  notifications Notification[]
   transactions  Transaction[]
+  sessions      Session[]
+  favourites    FavouriteSport[]
+
+  @@index([email])
+  @@index([username])
 }
 
-model RefreshToken {
-  id        Int      @id @default(autoincrement())
-  token     String   @unique
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  refreshToken String   @unique
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
 }
 
-// GROUP 2: Wallet
-//  - Wallet — id, userId FK (unique = one-to-one), balance Decimal(12,2), createdAt, updatedAt
-// - Transaction — id, walletId FK, type, amount Decimal(12,2), status, description?, betId FK?, createdAt
+// ─── WALLET & TRANSACTIONS ─────────────────────────────
 model Wallet {
-  id           Int           @id @default(autoincrement())
-  userId       Int           @unique
-  user         User          @relation(fields: [userId], references: [id])
-  balance      Decimal       @default(0) @db.Decimal(19, 4)
-  createdAt    DateTime      @default(now())
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Decimal  @default(0) @db.Decimal(12, 2)
+  currency  String   @default("AUD")
+  createdAt DateTime @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Transaction {
-  id          Int               @id @default(autoincrement())
-  walletId    Int
-  wallet      Wallet            @relation(fields: [walletId], references: [id])
-  userId      Int
-  user        User              @relation(fields: [userId], references: [id])
-  type        TransactionType
-  amount      Decimal           @db.Decimal(19, 4)
-  status      TransactionStatus @default(PENDING)
-  description String?
-  betId       Int?
-  bet         Bet?              @relation(fields: [betId], references: [id])
-  createdAt   DateTime          @default(now())
+  id            String          @id @default(cuid())
+  walletId      String
+  userId        String
+  betId         String?
+  type          TransactionType
+  amount        Decimal         @db.Decimal(12, 2)
+  balanceBefore Decimal         @db.Decimal(12, 2)
+  balanceAfter  Decimal         @db.Decimal(12, 2)
+  status        PaymentStatus   @default(PENDING)
+  metadata      Json?
+  reference     String?
+  createdAt     DateTime        @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bet    Bet?   @relation(fields: [betId], references: [id])
+
+  @@index([walletId])
+  @@index([userId])
+  @@index([betId])
+  @@index([type])
+  @@index([createdAt])
 }
 
-//  GROUP 3: Odds Data (from The Odds API)
-// - Sport — id, key (unique), group, title, active Boolean
-// - Event — id, externalId (unique), sportId FK, homeTeam, awayTeam, commenceTime, status, homeScore?, awayScore?, createdAt, updatedAt
-// - Market — id, eventId FK, type MarketType — @@unique([eventId, type])
-// - Outcome — id, marketId FK, name, price Decimal(10,4), point Decimal(6,2)?
+// ─── SPORTS & EVENTS ───────────────────────────────────
 model Sport {
-  id           Int     @id @default(autoincrement())
-  key          String  @unique // OddsAPI slug e.g. "english_soccer" etc
-  group        String // e.g. "Soccer" or "Aussie Rules"
-  title        String
-  description  String?
-  active       Boolean @default(true)
-  hasOutrights Boolean @default(false)
+  id          String  @id // OddsAPI slug e.g. "americanfootball_nfl"
+  group       String? // e.g. "Soccer" or "Aussie Rules"
+  title       String // e.g. "AFL"
+  description String?
+  isActive    Boolean @default(true)
+  iconUrl     String?
+
+  hasOutrights Boolean          @default(false)
+  favourites   FavouriteSport[]
   events       Event[]
 }
 
+model FavouriteSport {
+  userId  String
+  sportId String
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sport Sport @relation(fields: [sportId], references: [id], onDelete: Cascade)
+
+  @@id([userId, sportId])
+}
+
 model Team {
-  id         Int     @id @default(autoincrement())
+  id         String  @id @default(cuid())
   name       String  @unique
   homeEvents Event[] @relation("HomeTeam")
   awayEvents Event[] @relation("AwayTeam")
 }
 
 model Event {
-  id           Int         @id @default(autoincrement())
+  id           String      @id @default(cuid())
   externalId   String      @unique
-  sportId      Int
-  sport        Sport       @relation(fields: [sportId], references: [id])
-  homeTeamId   Int
+  sportId      String
+  homeTeamId   String
   homeTeam     Team        @relation("HomeTeam", fields: [homeTeamId], references: [id])
-  awayTeamId   Int
+  awayTeamId   String
   awayTeam     Team        @relation("AwayTeam", fields: [awayTeamId], references: [id])
   commenceTime DateTime
   status       EventStatus @default(UPCOMING)
   homeScore    Int?
   awayScore    Int?
-  markets      Market[]
+  result       EventResult?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
+
+  sport         Sport          @relation(fields: [sportId], references: [id])
+  oddsSnapshots OddsSnapshot[]
+  betLegs       BetLeg[]
+
+  @@index([sportId])
+  @@index([commenceTime])
+  @@index([status])
+  @@index([sportId, commenceTime])
 }
 
-model Market {
-  id       Int        @id @default(autoincrement())
-  eventId  Int
-  event    Event      @relation(fields: [eventId], references: [id])
-  type     MarketType
-  outcomes Outcome[]
+model OddsSnapshot {
+  id        String   @id @default(cuid())
+  eventId   String
+  bookmaker String // "sportsbet", "tab", etc
+  market    String // "h2h", "lines", "totals"
+  outcomes  Json // array of { name, price, point? }
+  fetchedAt DateTime @default(now())
 
-  @@unique([eventId, type])
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId, market])
+  @@index([eventId, bookmaker, market])
+  @@index([fetchedAt])
 }
 
-model Outcome {
-  id            Int            @id @default(autoincrement())
-  marketId      Int
-  market        Market         @relation(fields: [marketId], references: [id])
-  name          String
-  price         Decimal        @db.Decimal(10, 4)
-  point         Decimal?       @db.Decimal(6, 2)
-  betSelections BetSelection[]
-}
 
-//  Group 4: Bets
-// - Bet — id, userId FK, type BetType, stake Decimal(12,2), potentialPayout Decimal(12,2), actualPayout Decimal(12,2)?, odds Decimal(10,4),
-// status BetStatus, placedAt, settledAt?
-// - BetSelection — id, betId FK, outcomeId FK, odds Decimal(10,4), result SelectionResult?
+// ─── BETTING ────────────────────────────────────────────
 model Bet {
-  id              Int            @id @default(autoincrement())
-  userId          Int
-  user            User           @relation(fields: [userId], references: [id])
+  id              String         @id @default(cuid())
+  userId          String
   type            BetType
-  stake           Decimal        @db.Decimal(10, 4)
+  stake           Decimal        @db.Decimal(12, 2)
   potentialPayout Decimal        @db.Decimal(12, 2)
-  actualPayout    Decimal?       @db.Decimal(10, 4)
-  odds            Decimal        @db.Decimal(12, 2)
+  actualPayout    Decimal?       @db.Decimal(12, 2)
+  totalOdds       Decimal        @db.Decimal(10, 4)
   status          BetStatus      @default(PENDING)
   placedAt        DateTime       @default(now())
   settledAt       DateTime?
-  selections      BetSelection[]
-  transactions    Transaction[]
+  user         User          @relation(fields: [userId], references: [id])
+  legs         BetLeg[]
+  transactions Transaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([userId, placedAt])
 }
 
-model BetSelection {
-  id        Int              @id @default(autoincrement())
-  betId     Int
-  bet       Bet              @relation(fields: [betId], references: [id])
-  outcomeId Int
-  outcome   Outcome          @relation(fields: [outcomeId], references: [id])
-  odds      Decimal          @db.Decimal(10, 4)
-  result    SelectionResult?
+model BetLeg {
+  id        String     @id @default(cuid())
+  betId     String
+  eventId   String
+  market    String // "h2h", "totals"
+  selection String // team name or "overs/unders"
+  odds      Decimal    @db.Decimal(10, 4)
+  line      Decimal?   @db.Decimal(6, 2) // spread/total line 
+  bookmaker String // which bookie odds used
+  status    LegStatus @default(PENDING)
+
+  bet   Bet   @relation(fields: [betId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id])
+
+  @@index([betId])
+  @@index([eventId])
+  @@index([eventId, status])
+}
+
+
+// ─── NOTIFICATIONS ──────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
 }

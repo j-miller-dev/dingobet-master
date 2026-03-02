@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Event
@@ -27,47 +27,41 @@ export type AggregateEvent = {
 }
 
 export type EventAvgAggregateOutputType = {
-  id: number | null
-  sportId: number | null
-  homeTeamId: number | null
-  awayTeamId: number | null
   homeScore: number | null
   awayScore: number | null
 }
 
 export type EventSumAggregateOutputType = {
-  id: number | null
-  sportId: number | null
-  homeTeamId: number | null
-  awayTeamId: number | null
   homeScore: number | null
   awayScore: number | null
 }
 
 export type EventMinAggregateOutputType = {
-  id: number | null
+  id: string | null
   externalId: string | null
-  sportId: number | null
-  homeTeamId: number | null
-  awayTeamId: number | null
+  sportId: string | null
+  homeTeamId: string | null
+  awayTeamId: string | null
   commenceTime: Date | null
   status: $Enums.EventStatus | null
   homeScore: number | null
   awayScore: number | null
+  result: $Enums.EventResult | null
   createdAt: Date | null
   updatedAt: Date | null
 }
 
 export type EventMaxAggregateOutputType = {
-  id: number | null
+  id: string | null
   externalId: string | null
-  sportId: number | null
-  homeTeamId: number | null
-  awayTeamId: number | null
+  sportId: string | null
+  homeTeamId: string | null
+  awayTeamId: string | null
   commenceTime: Date | null
   status: $Enums.EventStatus | null
   homeScore: number | null
   awayScore: number | null
+  result: $Enums.EventResult | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +76,7 @@ export type EventCountAggregateOutputType = {
   status: number
   homeScore: number
   awayScore: number
+  result: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -89,19 +84,11 @@ export type EventCountAggregateOutputType = {
 
 
 export type EventAvgAggregateInputType = {
-  id?: true
-  sportId?: true
-  homeTeamId?: true
-  awayTeamId?: true
   homeScore?: true
   awayScore?: true
 }
 
 export type EventSumAggregateInputType = {
-  id?: true
-  sportId?: true
-  homeTeamId?: true
-  awayTeamId?: true
   homeScore?: true
   awayScore?: true
 }
@@ -116,6 +103,7 @@ export type EventMinAggregateInputType = {
   status?: true
   homeScore?: true
   awayScore?: true
+  result?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -130,6 +118,7 @@ export type EventMaxAggregateInputType = {
   status?: true
   homeScore?: true
   awayScore?: true
+  result?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -144,6 +133,7 @@ export type EventCountAggregateInputType = {
   status?: true
   homeScore?: true
   awayScore?: true
+  result?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -236,15 +226,16 @@ export type EventGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 }
 
 export type EventGroupByOutputType = {
-  id: number
+  id: string
   externalId: string
-  sportId: number
-  homeTeamId: number
-  awayTeamId: number
+  sportId: string
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date
   status: $Enums.EventStatus
   homeScore: number | null
   awayScore: number | null
+  result: $Enums.EventResult | null
   createdAt: Date
   updatedAt: Date
   _count: EventCountAggregateOutputType | null
@@ -273,21 +264,23 @@ export type EventWhereInput = {
   AND?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   OR?: Prisma.EventWhereInput[]
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
-  id?: Prisma.IntFilter<"Event"> | number
+  id?: Prisma.StringFilter<"Event"> | string
   externalId?: Prisma.StringFilter<"Event"> | string
-  sportId?: Prisma.IntFilter<"Event"> | number
-  homeTeamId?: Prisma.IntFilter<"Event"> | number
-  awayTeamId?: Prisma.IntFilter<"Event"> | number
+  sportId?: Prisma.StringFilter<"Event"> | string
+  homeTeamId?: Prisma.StringFilter<"Event"> | string
+  awayTeamId?: Prisma.StringFilter<"Event"> | string
   commenceTime?: Prisma.DateTimeFilter<"Event"> | Date | string
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   homeScore?: Prisma.IntNullableFilter<"Event"> | number | null
   awayScore?: Prisma.IntNullableFilter<"Event"> | number | null
+  result?: Prisma.EnumEventResultNullableFilter<"Event"> | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
-  sport?: Prisma.XOR<Prisma.SportScalarRelationFilter, Prisma.SportWhereInput>
   homeTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   awayTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
-  markets?: Prisma.MarketListRelationFilter
+  sport?: Prisma.XOR<Prisma.SportScalarRelationFilter, Prisma.SportWhereInput>
+  oddsSnapshots?: Prisma.OddsSnapshotListRelationFilter
+  betLegs?: Prisma.BetLegListRelationFilter
 }
 
 export type EventOrderByWithRelationInput = {
@@ -300,33 +293,37 @@ export type EventOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
   awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  sport?: Prisma.SportOrderByWithRelationInput
   homeTeam?: Prisma.TeamOrderByWithRelationInput
   awayTeam?: Prisma.TeamOrderByWithRelationInput
-  markets?: Prisma.MarketOrderByRelationAggregateInput
+  sport?: Prisma.SportOrderByWithRelationInput
+  oddsSnapshots?: Prisma.OddsSnapshotOrderByRelationAggregateInput
+  betLegs?: Prisma.BetLegOrderByRelationAggregateInput
 }
 
 export type EventWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   externalId?: string
   AND?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   OR?: Prisma.EventWhereInput[]
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
-  sportId?: Prisma.IntFilter<"Event"> | number
-  homeTeamId?: Prisma.IntFilter<"Event"> | number
-  awayTeamId?: Prisma.IntFilter<"Event"> | number
+  sportId?: Prisma.StringFilter<"Event"> | string
+  homeTeamId?: Prisma.StringFilter<"Event"> | string
+  awayTeamId?: Prisma.StringFilter<"Event"> | string
   commenceTime?: Prisma.DateTimeFilter<"Event"> | Date | string
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   homeScore?: Prisma.IntNullableFilter<"Event"> | number | null
   awayScore?: Prisma.IntNullableFilter<"Event"> | number | null
+  result?: Prisma.EnumEventResultNullableFilter<"Event"> | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
-  sport?: Prisma.XOR<Prisma.SportScalarRelationFilter, Prisma.SportWhereInput>
   homeTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
   awayTeam?: Prisma.XOR<Prisma.TeamScalarRelationFilter, Prisma.TeamWhereInput>
-  markets?: Prisma.MarketListRelationFilter
+  sport?: Prisma.XOR<Prisma.SportScalarRelationFilter, Prisma.SportWhereInput>
+  oddsSnapshots?: Prisma.OddsSnapshotListRelationFilter
+  betLegs?: Prisma.BetLegListRelationFilter
 }, "id" | "externalId">
 
 export type EventOrderByWithAggregationInput = {
@@ -339,6 +336,7 @@ export type EventOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   homeScore?: Prisma.SortOrderInput | Prisma.SortOrder
   awayScore?: Prisma.SortOrderInput | Prisma.SortOrder
+  result?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.EventCountOrderByAggregateInput
@@ -352,111 +350,126 @@ export type EventScalarWhereWithAggregatesInput = {
   AND?: Prisma.EventScalarWhereWithAggregatesInput | Prisma.EventScalarWhereWithAggregatesInput[]
   OR?: Prisma.EventScalarWhereWithAggregatesInput[]
   NOT?: Prisma.EventScalarWhereWithAggregatesInput | Prisma.EventScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Event"> | number
+  id?: Prisma.StringWithAggregatesFilter<"Event"> | string
   externalId?: Prisma.StringWithAggregatesFilter<"Event"> | string
-  sportId?: Prisma.IntWithAggregatesFilter<"Event"> | number
-  homeTeamId?: Prisma.IntWithAggregatesFilter<"Event"> | number
-  awayTeamId?: Prisma.IntWithAggregatesFilter<"Event"> | number
+  sportId?: Prisma.StringWithAggregatesFilter<"Event"> | string
+  homeTeamId?: Prisma.StringWithAggregatesFilter<"Event"> | string
+  awayTeamId?: Prisma.StringWithAggregatesFilter<"Event"> | string
   commenceTime?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   status?: Prisma.EnumEventStatusWithAggregatesFilter<"Event"> | $Enums.EventStatus
   homeScore?: Prisma.IntNullableWithAggregatesFilter<"Event"> | number | null
   awayScore?: Prisma.IntNullableWithAggregatesFilter<"Event"> | number | null
+  result?: Prisma.EnumEventResultNullableWithAggregatesFilter<"Event"> | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
 }
 
 export type EventCreateInput = {
+  id?: string
   externalId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  sport: Prisma.SportCreateNestedOneWithoutEventsInput
   homeTeam: Prisma.TeamCreateNestedOneWithoutHomeEventsInput
   awayTeam: Prisma.TeamCreateNestedOneWithoutAwayEventsInput
-  markets?: Prisma.MarketCreateNestedManyWithoutEventInput
+  sport: Prisma.SportCreateNestedOneWithoutEventsInput
+  oddsSnapshots?: Prisma.OddsSnapshotCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  homeTeamId: number
-  awayTeamId: number
+  sportId: string
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  markets?: Prisma.MarketUncheckedCreateNestedManyWithoutEventInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
   homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeEventsNestedInput
   awayTeam?: Prisma.TeamUpdateOneRequiredWithoutAwayEventsNestedInput
-  markets?: Prisma.MarketUpdateManyWithoutEventNestedInput
+  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  markets?: Prisma.MarketUncheckedUpdateManyWithoutEventNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateManyInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  homeTeamId: number
-  awayTeamId: number
+  sportId: string
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type EventUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EventUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -481,15 +494,12 @@ export type EventCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  result?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type EventAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  sportId?: Prisma.SortOrder
-  homeTeamId?: Prisma.SortOrder
-  awayTeamId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
 }
@@ -504,6 +514,7 @@ export type EventMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  result?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -518,15 +529,12 @@ export type EventMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
+  result?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
 export type EventSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  sportId?: Prisma.SortOrder
-  homeTeamId?: Prisma.SortOrder
-  awayTeamId?: Prisma.SortOrder
   homeScore?: Prisma.SortOrder
   awayScore?: Prisma.SortOrder
 }
@@ -666,45 +674,76 @@ export type EnumEventStatusFieldUpdateOperationsInput = {
   set?: $Enums.EventStatus
 }
 
-export type EventCreateNestedOneWithoutMarketsInput = {
-  create?: Prisma.XOR<Prisma.EventCreateWithoutMarketsInput, Prisma.EventUncheckedCreateWithoutMarketsInput>
-  connectOrCreate?: Prisma.EventCreateOrConnectWithoutMarketsInput
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type NullableEnumEventResultFieldUpdateOperationsInput = {
+  set?: $Enums.EventResult | null
+}
+
+export type EventCreateNestedOneWithoutOddsSnapshotsInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutOddsSnapshotsInput, Prisma.EventUncheckedCreateWithoutOddsSnapshotsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutOddsSnapshotsInput
   connect?: Prisma.EventWhereUniqueInput
 }
 
-export type EventUpdateOneRequiredWithoutMarketsNestedInput = {
-  create?: Prisma.XOR<Prisma.EventCreateWithoutMarketsInput, Prisma.EventUncheckedCreateWithoutMarketsInput>
-  connectOrCreate?: Prisma.EventCreateOrConnectWithoutMarketsInput
-  upsert?: Prisma.EventUpsertWithoutMarketsInput
+export type EventUpdateOneRequiredWithoutOddsSnapshotsNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutOddsSnapshotsInput, Prisma.EventUncheckedCreateWithoutOddsSnapshotsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutOddsSnapshotsInput
+  upsert?: Prisma.EventUpsertWithoutOddsSnapshotsInput
   connect?: Prisma.EventWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutMarketsInput, Prisma.EventUpdateWithoutMarketsInput>, Prisma.EventUncheckedUpdateWithoutMarketsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutOddsSnapshotsInput, Prisma.EventUpdateWithoutOddsSnapshotsInput>, Prisma.EventUncheckedUpdateWithoutOddsSnapshotsInput>
+}
+
+export type EventCreateNestedOneWithoutBetLegsInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutBetLegsInput, Prisma.EventUncheckedCreateWithoutBetLegsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutBetLegsInput
+  connect?: Prisma.EventWhereUniqueInput
+}
+
+export type EventUpdateOneRequiredWithoutBetLegsNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutBetLegsInput, Prisma.EventUncheckedCreateWithoutBetLegsInput>
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutBetLegsInput
+  upsert?: Prisma.EventUpsertWithoutBetLegsInput
+  connect?: Prisma.EventWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EventUpdateToOneWithWhereWithoutBetLegsInput, Prisma.EventUpdateWithoutBetLegsInput>, Prisma.EventUncheckedUpdateWithoutBetLegsInput>
 }
 
 export type EventCreateWithoutSportInput = {
+  id?: string
   externalId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
   homeTeam: Prisma.TeamCreateNestedOneWithoutHomeEventsInput
   awayTeam: Prisma.TeamCreateNestedOneWithoutAwayEventsInput
-  markets?: Prisma.MarketCreateNestedManyWithoutEventInput
+  oddsSnapshots?: Prisma.OddsSnapshotCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutSportInput = {
-  id?: number
+  id?: string
   externalId: string
-  homeTeamId: number
-  awayTeamId: number
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  markets?: Prisma.MarketUncheckedCreateNestedManyWithoutEventInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutSportInput = {
@@ -737,44 +776,50 @@ export type EventScalarWhereInput = {
   AND?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
   OR?: Prisma.EventScalarWhereInput[]
   NOT?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
-  id?: Prisma.IntFilter<"Event"> | number
+  id?: Prisma.StringFilter<"Event"> | string
   externalId?: Prisma.StringFilter<"Event"> | string
-  sportId?: Prisma.IntFilter<"Event"> | number
-  homeTeamId?: Prisma.IntFilter<"Event"> | number
-  awayTeamId?: Prisma.IntFilter<"Event"> | number
+  sportId?: Prisma.StringFilter<"Event"> | string
+  homeTeamId?: Prisma.StringFilter<"Event"> | string
+  awayTeamId?: Prisma.StringFilter<"Event"> | string
   commenceTime?: Prisma.DateTimeFilter<"Event"> | Date | string
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   homeScore?: Prisma.IntNullableFilter<"Event"> | number | null
   awayScore?: Prisma.IntNullableFilter<"Event"> | number | null
+  result?: Prisma.EnumEventResultNullableFilter<"Event"> | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Event"> | Date | string
 }
 
 export type EventCreateWithoutHomeTeamInput = {
+  id?: string
   externalId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  sport: Prisma.SportCreateNestedOneWithoutEventsInput
   awayTeam: Prisma.TeamCreateNestedOneWithoutAwayEventsInput
-  markets?: Prisma.MarketCreateNestedManyWithoutEventInput
+  sport: Prisma.SportCreateNestedOneWithoutEventsInput
+  oddsSnapshots?: Prisma.OddsSnapshotCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutHomeTeamInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  awayTeamId: number
+  sportId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  markets?: Prisma.MarketUncheckedCreateNestedManyWithoutEventInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutHomeTeamInput = {
@@ -788,30 +833,35 @@ export type EventCreateManyHomeTeamInputEnvelope = {
 }
 
 export type EventCreateWithoutAwayTeamInput = {
+  id?: string
   externalId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  sport: Prisma.SportCreateNestedOneWithoutEventsInput
   homeTeam: Prisma.TeamCreateNestedOneWithoutHomeEventsInput
-  markets?: Prisma.MarketCreateNestedManyWithoutEventInput
+  sport: Prisma.SportCreateNestedOneWithoutEventsInput
+  oddsSnapshots?: Prisma.OddsSnapshotCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegCreateNestedManyWithoutEventInput
 }
 
 export type EventUncheckedCreateWithoutAwayTeamInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  homeTeamId: number
+  sportId: string
+  homeTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  markets?: Prisma.MarketUncheckedCreateNestedManyWithoutEventInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedCreateNestedManyWithoutEventInput
+  betLegs?: Prisma.BetLegUncheckedCreateNestedManyWithoutEventInput
 }
 
 export type EventCreateOrConnectWithoutAwayTeamInput = {
@@ -856,231 +906,342 @@ export type EventUpdateManyWithWhereWithoutAwayTeamInput = {
   data: Prisma.XOR<Prisma.EventUpdateManyMutationInput, Prisma.EventUncheckedUpdateManyWithoutAwayTeamInput>
 }
 
-export type EventCreateWithoutMarketsInput = {
+export type EventCreateWithoutOddsSnapshotsInput = {
+  id?: string
   externalId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  sport: Prisma.SportCreateNestedOneWithoutEventsInput
   homeTeam: Prisma.TeamCreateNestedOneWithoutHomeEventsInput
   awayTeam: Prisma.TeamCreateNestedOneWithoutAwayEventsInput
+  sport: Prisma.SportCreateNestedOneWithoutEventsInput
+  betLegs?: Prisma.BetLegCreateNestedManyWithoutEventInput
 }
 
-export type EventUncheckedCreateWithoutMarketsInput = {
-  id?: number
+export type EventUncheckedCreateWithoutOddsSnapshotsInput = {
+  id?: string
   externalId: string
-  sportId: number
-  homeTeamId: number
-  awayTeamId: number
+  sportId: string
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  betLegs?: Prisma.BetLegUncheckedCreateNestedManyWithoutEventInput
 }
 
-export type EventCreateOrConnectWithoutMarketsInput = {
+export type EventCreateOrConnectWithoutOddsSnapshotsInput = {
   where: Prisma.EventWhereUniqueInput
-  create: Prisma.XOR<Prisma.EventCreateWithoutMarketsInput, Prisma.EventUncheckedCreateWithoutMarketsInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutOddsSnapshotsInput, Prisma.EventUncheckedCreateWithoutOddsSnapshotsInput>
 }
 
-export type EventUpsertWithoutMarketsInput = {
-  update: Prisma.XOR<Prisma.EventUpdateWithoutMarketsInput, Prisma.EventUncheckedUpdateWithoutMarketsInput>
-  create: Prisma.XOR<Prisma.EventCreateWithoutMarketsInput, Prisma.EventUncheckedCreateWithoutMarketsInput>
+export type EventUpsertWithoutOddsSnapshotsInput = {
+  update: Prisma.XOR<Prisma.EventUpdateWithoutOddsSnapshotsInput, Prisma.EventUncheckedUpdateWithoutOddsSnapshotsInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutOddsSnapshotsInput, Prisma.EventUncheckedCreateWithoutOddsSnapshotsInput>
   where?: Prisma.EventWhereInput
 }
 
-export type EventUpdateToOneWithWhereWithoutMarketsInput = {
+export type EventUpdateToOneWithWhereWithoutOddsSnapshotsInput = {
   where?: Prisma.EventWhereInput
-  data: Prisma.XOR<Prisma.EventUpdateWithoutMarketsInput, Prisma.EventUncheckedUpdateWithoutMarketsInput>
+  data: Prisma.XOR<Prisma.EventUpdateWithoutOddsSnapshotsInput, Prisma.EventUncheckedUpdateWithoutOddsSnapshotsInput>
 }
 
-export type EventUpdateWithoutMarketsInput = {
+export type EventUpdateWithoutOddsSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
   homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeEventsNestedInput
   awayTeam?: Prisma.TeamUpdateOneRequiredWithoutAwayEventsNestedInput
+  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
+  betLegs?: Prisma.BetLegUpdateManyWithoutEventNestedInput
 }
 
-export type EventUncheckedUpdateWithoutMarketsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+export type EventUncheckedUpdateWithoutOddsSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  betLegs?: Prisma.BetLegUncheckedUpdateManyWithoutEventNestedInput
+}
+
+export type EventCreateWithoutBetLegsInput = {
+  id?: string
+  externalId: string
+  commenceTime: Date | string
+  status?: $Enums.EventStatus
+  homeScore?: number | null
+  awayScore?: number | null
+  result?: $Enums.EventResult | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  homeTeam: Prisma.TeamCreateNestedOneWithoutHomeEventsInput
+  awayTeam: Prisma.TeamCreateNestedOneWithoutAwayEventsInput
+  sport: Prisma.SportCreateNestedOneWithoutEventsInput
+  oddsSnapshots?: Prisma.OddsSnapshotCreateNestedManyWithoutEventInput
+}
+
+export type EventUncheckedCreateWithoutBetLegsInput = {
+  id?: string
+  externalId: string
+  sportId: string
+  homeTeamId: string
+  awayTeamId: string
+  commenceTime: Date | string
+  status?: $Enums.EventStatus
+  homeScore?: number | null
+  awayScore?: number | null
+  result?: $Enums.EventResult | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedCreateNestedManyWithoutEventInput
+}
+
+export type EventCreateOrConnectWithoutBetLegsInput = {
+  where: Prisma.EventWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventCreateWithoutBetLegsInput, Prisma.EventUncheckedCreateWithoutBetLegsInput>
+}
+
+export type EventUpsertWithoutBetLegsInput = {
+  update: Prisma.XOR<Prisma.EventUpdateWithoutBetLegsInput, Prisma.EventUncheckedUpdateWithoutBetLegsInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutBetLegsInput, Prisma.EventUncheckedCreateWithoutBetLegsInput>
+  where?: Prisma.EventWhereInput
+}
+
+export type EventUpdateToOneWithWhereWithoutBetLegsInput = {
+  where?: Prisma.EventWhereInput
+  data: Prisma.XOR<Prisma.EventUpdateWithoutBetLegsInput, Prisma.EventUncheckedUpdateWithoutBetLegsInput>
+}
+
+export type EventUpdateWithoutBetLegsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.StringFieldUpdateOperationsInput | string
+  commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeEventsNestedInput
+  awayTeam?: Prisma.TeamUpdateOneRequiredWithoutAwayEventsNestedInput
+  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUpdateManyWithoutEventNestedInput
+}
+
+export type EventUncheckedUpdateWithoutBetLegsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  externalId?: Prisma.StringFieldUpdateOperationsInput | string
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
+  homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventCreateManySportInput = {
-  id?: number
+  id?: string
   externalId: string
-  homeTeamId: number
-  awayTeamId: number
+  homeTeamId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type EventUpdateWithoutSportInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeEventsNestedInput
   awayTeam?: Prisma.TeamUpdateOneRequiredWithoutAwayEventsNestedInput
-  markets?: Prisma.MarketUpdateManyWithoutEventNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutSportInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  markets?: Prisma.MarketUncheckedUpdateManyWithoutEventNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateManyWithoutSportInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EventCreateManyHomeTeamInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  awayTeamId: number
+  sportId: string
+  awayTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type EventCreateManyAwayTeamInput = {
-  id?: number
+  id?: string
   externalId: string
-  sportId: number
-  homeTeamId: number
+  sportId: string
+  homeTeamId: string
   commenceTime: Date | string
   status?: $Enums.EventStatus
   homeScore?: number | null
   awayScore?: number | null
+  result?: $Enums.EventResult | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
 
 export type EventUpdateWithoutHomeTeamInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
   awayTeam?: Prisma.TeamUpdateOneRequiredWithoutAwayEventsNestedInput
-  markets?: Prisma.MarketUpdateManyWithoutEventNestedInput
+  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutHomeTeamInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  markets?: Prisma.MarketUncheckedUpdateManyWithoutEventNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateManyWithoutHomeTeamInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  awayTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  awayTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EventUpdateWithoutAwayTeamInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
   homeTeam?: Prisma.TeamUpdateOneRequiredWithoutHomeEventsNestedInput
-  markets?: Prisma.MarketUpdateManyWithoutEventNestedInput
+  sport?: Prisma.SportUpdateOneRequiredWithoutEventsNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateWithoutAwayTeamInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  markets?: Prisma.MarketUncheckedUpdateManyWithoutEventNestedInput
+  oddsSnapshots?: Prisma.OddsSnapshotUncheckedUpdateManyWithoutEventNestedInput
+  betLegs?: Prisma.BetLegUncheckedUpdateManyWithoutEventNestedInput
 }
 
 export type EventUncheckedUpdateManyWithoutAwayTeamInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   externalId?: Prisma.StringFieldUpdateOperationsInput | string
-  sportId?: Prisma.IntFieldUpdateOperationsInput | number
-  homeTeamId?: Prisma.IntFieldUpdateOperationsInput | number
+  sportId?: Prisma.StringFieldUpdateOperationsInput | string
+  homeTeamId?: Prisma.StringFieldUpdateOperationsInput | string
   commenceTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   homeScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   awayScore?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  result?: Prisma.NullableEnumEventResultFieldUpdateOperationsInput | $Enums.EventResult | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1091,11 +1252,13 @@ export type EventUncheckedUpdateManyWithoutAwayTeamInput = {
  */
 
 export type EventCountOutputType = {
-  markets: number
+  oddsSnapshots: number
+  betLegs: number
 }
 
 export type EventCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  markets?: boolean | EventCountOutputTypeCountMarketsArgs
+  oddsSnapshots?: boolean | EventCountOutputTypeCountOddsSnapshotsArgs
+  betLegs?: boolean | EventCountOutputTypeCountBetLegsArgs
 }
 
 /**
@@ -1111,8 +1274,15 @@ export type EventCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extens
 /**
  * EventCountOutputType without action
  */
-export type EventCountOutputTypeCountMarketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MarketWhereInput
+export type EventCountOutputTypeCountOddsSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.OddsSnapshotWhereInput
+}
+
+/**
+ * EventCountOutputType without action
+ */
+export type EventCountOutputTypeCountBetLegsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BetLegWhereInput
 }
 
 
@@ -1126,12 +1296,14 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  result?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
-  markets?: boolean | Prisma.Event$marketsArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
+  oddsSnapshots?: boolean | Prisma.Event$oddsSnapshotsArgs<ExtArgs>
+  betLegs?: boolean | Prisma.Event$betLegsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
@@ -1145,11 +1317,12 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  result?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
 export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1162,11 +1335,12 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   status?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  result?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
 export type EventSelectScalar = {
@@ -1179,47 +1353,51 @@ export type EventSelectScalar = {
   status?: boolean
   homeScore?: boolean
   awayScore?: boolean
+  result?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "sportId" | "homeTeamId" | "awayTeamId" | "commenceTime" | "status" | "homeScore" | "awayScore" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "externalId" | "sportId" | "homeTeamId" | "awayTeamId" | "commenceTime" | "status" | "homeScore" | "awayScore" | "result" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
-  markets?: boolean | Prisma.Event$marketsArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
+  oddsSnapshots?: boolean | Prisma.Event$oddsSnapshotsArgs<ExtArgs>
+  betLegs?: boolean | Prisma.Event$betLegsArgs<ExtArgs>
   _count?: boolean | Prisma.EventCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
 }
 export type EventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
   homeTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
   awayTeam?: boolean | Prisma.TeamDefaultArgs<ExtArgs>
+  sport?: boolean | Prisma.SportDefaultArgs<ExtArgs>
 }
 
 export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Event"
   objects: {
-    sport: Prisma.$SportPayload<ExtArgs>
     homeTeam: Prisma.$TeamPayload<ExtArgs>
     awayTeam: Prisma.$TeamPayload<ExtArgs>
-    markets: Prisma.$MarketPayload<ExtArgs>[]
+    sport: Prisma.$SportPayload<ExtArgs>
+    oddsSnapshots: Prisma.$OddsSnapshotPayload<ExtArgs>[]
+    betLegs: Prisma.$BetLegPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
+    id: string
     externalId: string
-    sportId: number
-    homeTeamId: number
-    awayTeamId: number
+    sportId: string
+    homeTeamId: string
+    awayTeamId: string
     commenceTime: Date
     status: $Enums.EventStatus
     homeScore: number | null
     awayScore: number | null
+    result: $Enums.EventResult | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["event"]>
@@ -1616,10 +1794,11 @@ readonly fields: EventFieldRefs;
  */
 export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  sport<T extends Prisma.SportDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SportDefaultArgs<ExtArgs>>): Prisma.Prisma__SportClient<runtime.Types.Result.GetResult<Prisma.$SportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   homeTeam<T extends Prisma.TeamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   awayTeam<T extends Prisma.TeamDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TeamDefaultArgs<ExtArgs>>): Prisma.Prisma__TeamClient<runtime.Types.Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  markets<T extends Prisma.Event$marketsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$marketsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MarketPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sport<T extends Prisma.SportDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SportDefaultArgs<ExtArgs>>): Prisma.Prisma__SportClient<runtime.Types.Result.GetResult<Prisma.$SportPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  oddsSnapshots<T extends Prisma.Event$oddsSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$oddsSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OddsSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  betLegs<T extends Prisma.Event$betLegsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$betLegsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BetLegPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1649,15 +1828,16 @@ export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Ty
  * Fields of the Event model
  */
 export interface EventFieldRefs {
-  readonly id: Prisma.FieldRef<"Event", 'Int'>
+  readonly id: Prisma.FieldRef<"Event", 'String'>
   readonly externalId: Prisma.FieldRef<"Event", 'String'>
-  readonly sportId: Prisma.FieldRef<"Event", 'Int'>
-  readonly homeTeamId: Prisma.FieldRef<"Event", 'Int'>
-  readonly awayTeamId: Prisma.FieldRef<"Event", 'Int'>
+  readonly sportId: Prisma.FieldRef<"Event", 'String'>
+  readonly homeTeamId: Prisma.FieldRef<"Event", 'String'>
+  readonly awayTeamId: Prisma.FieldRef<"Event", 'String'>
   readonly commenceTime: Prisma.FieldRef<"Event", 'DateTime'>
   readonly status: Prisma.FieldRef<"Event", 'EventStatus'>
   readonly homeScore: Prisma.FieldRef<"Event", 'Int'>
   readonly awayScore: Prisma.FieldRef<"Event", 'Int'>
+  readonly result: Prisma.FieldRef<"Event", 'EventResult'>
   readonly createdAt: Prisma.FieldRef<"Event", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Event", 'DateTime'>
 }
@@ -2056,27 +2236,51 @@ export type EventDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Event.markets
+ * Event.oddsSnapshots
  */
-export type Event$marketsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Event$oddsSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Market
+   * Select specific fields to fetch from the OddsSnapshot
    */
-  select?: Prisma.MarketSelect<ExtArgs> | null
+  select?: Prisma.OddsSnapshotSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Market
+   * Omit specific fields from the OddsSnapshot
    */
-  omit?: Prisma.MarketOmit<ExtArgs> | null
+  omit?: Prisma.OddsSnapshotOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.MarketInclude<ExtArgs> | null
-  where?: Prisma.MarketWhereInput
-  orderBy?: Prisma.MarketOrderByWithRelationInput | Prisma.MarketOrderByWithRelationInput[]
-  cursor?: Prisma.MarketWhereUniqueInput
+  include?: Prisma.OddsSnapshotInclude<ExtArgs> | null
+  where?: Prisma.OddsSnapshotWhereInput
+  orderBy?: Prisma.OddsSnapshotOrderByWithRelationInput | Prisma.OddsSnapshotOrderByWithRelationInput[]
+  cursor?: Prisma.OddsSnapshotWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.MarketScalarFieldEnum | Prisma.MarketScalarFieldEnum[]
+  distinct?: Prisma.OddsSnapshotScalarFieldEnum | Prisma.OddsSnapshotScalarFieldEnum[]
+}
+
+/**
+ * Event.betLegs
+ */
+export type Event$betLegsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BetLeg
+   */
+  select?: Prisma.BetLegSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BetLeg
+   */
+  omit?: Prisma.BetLegOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BetLegInclude<ExtArgs> | null
+  where?: Prisma.BetLegWhereInput
+  orderBy?: Prisma.BetLegOrderByWithRelationInput | Prisma.BetLegOrderByWithRelationInput[]
+  cursor?: Prisma.BetLegWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BetLegScalarFieldEnum | Prisma.BetLegScalarFieldEnum[]
 }
 
 /**

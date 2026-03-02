@@ -13,20 +13,20 @@
  * 🟢 You can import this file directly.
  */
 
-import * as Prisma from './internal/prismaNamespaceBrowser'
+import * as Prisma from './internal/prismaNamespaceBrowser.js'
 export { Prisma }
-export * as $Enums from './enums'
-export * from './enums';
+export * as $Enums from './enums.js'
+export * from './enums.js';
 /**
  * Model User
  * 
  */
 export type User = Prisma.UserModel
 /**
- * Model RefreshToken
+ * Model Session
  * 
  */
-export type RefreshToken = Prisma.RefreshTokenModel
+export type Session = Prisma.SessionModel
 /**
  * Model Wallet
  * 
@@ -43,6 +43,11 @@ export type Transaction = Prisma.TransactionModel
  */
 export type Sport = Prisma.SportModel
 /**
+ * Model FavouriteSport
+ * 
+ */
+export type FavouriteSport = Prisma.FavouriteSportModel
+/**
  * Model Team
  * 
  */
@@ -53,22 +58,22 @@ export type Team = Prisma.TeamModel
  */
 export type Event = Prisma.EventModel
 /**
- * Model Market
+ * Model OddsSnapshot
  * 
  */
-export type Market = Prisma.MarketModel
-/**
- * Model Outcome
- * 
- */
-export type Outcome = Prisma.OutcomeModel
+export type OddsSnapshot = Prisma.OddsSnapshotModel
 /**
  * Model Bet
  * 
  */
 export type Bet = Prisma.BetModel
 /**
- * Model BetSelection
+ * Model BetLeg
  * 
  */
-export type BetSelection = Prisma.BetSelectionModel
+export type BetLeg = Prisma.BetLegModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

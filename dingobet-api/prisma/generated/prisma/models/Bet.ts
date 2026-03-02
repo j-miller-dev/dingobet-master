@@ -9,8 +9,8 @@
  * 🟢 You can import this file directly.
  */
 import type * as runtime from "@prisma/client/runtime/client"
-import type * as $Enums from "../enums"
-import type * as Prisma from "../internal/prismaNamespace"
+import type * as $Enums from "../enums.js"
+import type * as Prisma from "../internal/prismaNamespace.js"
 
 /**
  * Model Bet
@@ -27,44 +27,40 @@ export type AggregateBet = {
 }
 
 export type BetAvgAggregateOutputType = {
-  id: number | null
-  userId: number | null
   stake: runtime.Decimal | null
   potentialPayout: runtime.Decimal | null
   actualPayout: runtime.Decimal | null
-  odds: runtime.Decimal | null
+  totalOdds: runtime.Decimal | null
 }
 
 export type BetSumAggregateOutputType = {
-  id: number | null
-  userId: number | null
   stake: runtime.Decimal | null
   potentialPayout: runtime.Decimal | null
   actualPayout: runtime.Decimal | null
-  odds: runtime.Decimal | null
+  totalOdds: runtime.Decimal | null
 }
 
 export type BetMinAggregateOutputType = {
-  id: number | null
-  userId: number | null
+  id: string | null
+  userId: string | null
   type: $Enums.BetType | null
   stake: runtime.Decimal | null
   potentialPayout: runtime.Decimal | null
   actualPayout: runtime.Decimal | null
-  odds: runtime.Decimal | null
+  totalOdds: runtime.Decimal | null
   status: $Enums.BetStatus | null
   placedAt: Date | null
   settledAt: Date | null
 }
 
 export type BetMaxAggregateOutputType = {
-  id: number | null
-  userId: number | null
+  id: string | null
+  userId: string | null
   type: $Enums.BetType | null
   stake: runtime.Decimal | null
   potentialPayout: runtime.Decimal | null
   actualPayout: runtime.Decimal | null
-  odds: runtime.Decimal | null
+  totalOdds: runtime.Decimal | null
   status: $Enums.BetStatus | null
   placedAt: Date | null
   settledAt: Date | null
@@ -77,7 +73,7 @@ export type BetCountAggregateOutputType = {
   stake: number
   potentialPayout: number
   actualPayout: number
-  odds: number
+  totalOdds: number
   status: number
   placedAt: number
   settledAt: number
@@ -86,21 +82,17 @@ export type BetCountAggregateOutputType = {
 
 
 export type BetAvgAggregateInputType = {
-  id?: true
-  userId?: true
   stake?: true
   potentialPayout?: true
   actualPayout?: true
-  odds?: true
+  totalOdds?: true
 }
 
 export type BetSumAggregateInputType = {
-  id?: true
-  userId?: true
   stake?: true
   potentialPayout?: true
   actualPayout?: true
-  odds?: true
+  totalOdds?: true
 }
 
 export type BetMinAggregateInputType = {
@@ -110,7 +102,7 @@ export type BetMinAggregateInputType = {
   stake?: true
   potentialPayout?: true
   actualPayout?: true
-  odds?: true
+  totalOdds?: true
   status?: true
   placedAt?: true
   settledAt?: true
@@ -123,7 +115,7 @@ export type BetMaxAggregateInputType = {
   stake?: true
   potentialPayout?: true
   actualPayout?: true
-  odds?: true
+  totalOdds?: true
   status?: true
   placedAt?: true
   settledAt?: true
@@ -136,7 +128,7 @@ export type BetCountAggregateInputType = {
   stake?: true
   potentialPayout?: true
   actualPayout?: true
-  odds?: true
+  totalOdds?: true
   status?: true
   placedAt?: true
   settledAt?: true
@@ -230,13 +222,13 @@ export type BetGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }
 
 export type BetGroupByOutputType = {
-  id: number
-  userId: number
+  id: string
+  userId: string
   type: $Enums.BetType
   stake: runtime.Decimal
   potentialPayout: runtime.Decimal
   actualPayout: runtime.Decimal | null
-  odds: runtime.Decimal
+  totalOdds: runtime.Decimal
   status: $Enums.BetStatus
   placedAt: Date
   settledAt: Date | null
@@ -266,18 +258,18 @@ export type BetWhereInput = {
   AND?: Prisma.BetWhereInput | Prisma.BetWhereInput[]
   OR?: Prisma.BetWhereInput[]
   NOT?: Prisma.BetWhereInput | Prisma.BetWhereInput[]
-  id?: Prisma.IntFilter<"Bet"> | number
-  userId?: Prisma.IntFilter<"Bet"> | number
+  id?: Prisma.StringFilter<"Bet"> | string
+  userId?: Prisma.StringFilter<"Bet"> | string
   type?: Prisma.EnumBetTypeFilter<"Bet"> | $Enums.BetType
   stake?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.DecimalNullableFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFilter<"Bet"> | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFilter<"Bet"> | Date | string
   settledAt?: Prisma.DateTimeNullableFilter<"Bet"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  selections?: Prisma.BetSelectionListRelationFilter
+  legs?: Prisma.BetLegListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
 }
 
@@ -288,31 +280,31 @@ export type BetOrderByWithRelationInput = {
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrderInput | Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
   status?: Prisma.SortOrder
   placedAt?: Prisma.SortOrder
   settledAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
-  selections?: Prisma.BetSelectionOrderByRelationAggregateInput
+  legs?: Prisma.BetLegOrderByRelationAggregateInput
   transactions?: Prisma.TransactionOrderByRelationAggregateInput
 }
 
 export type BetWhereUniqueInput = Prisma.AtLeast<{
-  id?: number
+  id?: string
   AND?: Prisma.BetWhereInput | Prisma.BetWhereInput[]
   OR?: Prisma.BetWhereInput[]
   NOT?: Prisma.BetWhereInput | Prisma.BetWhereInput[]
-  userId?: Prisma.IntFilter<"Bet"> | number
+  userId?: Prisma.StringFilter<"Bet"> | string
   type?: Prisma.EnumBetTypeFilter<"Bet"> | $Enums.BetType
   stake?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.DecimalNullableFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFilter<"Bet"> | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFilter<"Bet"> | Date | string
   settledAt?: Prisma.DateTimeNullableFilter<"Bet"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  selections?: Prisma.BetSelectionListRelationFilter
+  legs?: Prisma.BetLegListRelationFilter
   transactions?: Prisma.TransactionListRelationFilter
 }, "id">
 
@@ -323,7 +315,7 @@ export type BetOrderByWithAggregationInput = {
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrderInput | Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
   status?: Prisma.SortOrder
   placedAt?: Prisma.SortOrder
   settledAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -338,108 +330,111 @@ export type BetScalarWhereWithAggregatesInput = {
   AND?: Prisma.BetScalarWhereWithAggregatesInput | Prisma.BetScalarWhereWithAggregatesInput[]
   OR?: Prisma.BetScalarWhereWithAggregatesInput[]
   NOT?: Prisma.BetScalarWhereWithAggregatesInput | Prisma.BetScalarWhereWithAggregatesInput[]
-  id?: Prisma.IntWithAggregatesFilter<"Bet"> | number
-  userId?: Prisma.IntWithAggregatesFilter<"Bet"> | number
+  id?: Prisma.StringWithAggregatesFilter<"Bet"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"Bet"> | string
   type?: Prisma.EnumBetTypeWithAggregatesFilter<"Bet"> | $Enums.BetType
   stake?: Prisma.DecimalWithAggregatesFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalWithAggregatesFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.DecimalNullableWithAggregatesFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalWithAggregatesFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalWithAggregatesFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusWithAggregatesFilter<"Bet"> | $Enums.BetStatus
   placedAt?: Prisma.DateTimeWithAggregatesFilter<"Bet"> | Date | string
   settledAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Bet"> | Date | string | null
 }
 
 export type BetCreateInput = {
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutBetsInput
-  selections?: Prisma.BetSelectionCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegCreateNestedManyWithoutBetInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutBetInput
 }
 
 export type BetUncheckedCreateInput = {
-  id?: number
-  userId: number
+  id?: string
+  userId: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
-  selections?: Prisma.BetSelectionUncheckedCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegUncheckedCreateNestedManyWithoutBetInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutBetInput
 }
 
 export type BetUpdateInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutBetsNestedInput
-  selections?: Prisma.BetSelectionUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUpdateManyWithoutBetNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutBetNestedInput
 }
 
 export type BetUncheckedUpdateInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  selections?: Prisma.BetSelectionUncheckedUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUncheckedUpdateManyWithoutBetNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutBetNestedInput
 }
 
 export type BetCreateManyInput = {
-  id?: number
-  userId: number
+  id?: string
+  userId: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
 }
 
 export type BetUpdateManyMutationInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type BetUncheckedUpdateManyInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -467,19 +462,17 @@ export type BetCountOrderByAggregateInput = {
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
   status?: Prisma.SortOrder
   placedAt?: Prisma.SortOrder
   settledAt?: Prisma.SortOrder
 }
 
 export type BetAvgOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
 }
 
 export type BetMaxOrderByAggregateInput = {
@@ -489,7 +482,7 @@ export type BetMaxOrderByAggregateInput = {
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
   status?: Prisma.SortOrder
   placedAt?: Prisma.SortOrder
   settledAt?: Prisma.SortOrder
@@ -502,19 +495,17 @@ export type BetMinOrderByAggregateInput = {
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
   status?: Prisma.SortOrder
   placedAt?: Prisma.SortOrder
   settledAt?: Prisma.SortOrder
 }
 
 export type BetSumOrderByAggregateInput = {
-  id?: Prisma.SortOrder
-  userId?: Prisma.SortOrder
   stake?: Prisma.SortOrder
   potentialPayout?: Prisma.SortOrder
   actualPayout?: Prisma.SortOrder
-  odds?: Prisma.SortOrder
+  totalOdds?: Prisma.SortOrder
 }
 
 export type BetScalarRelationFilter = {
@@ -584,52 +575,57 @@ export type EnumBetTypeFieldUpdateOperationsInput = {
   set?: $Enums.BetType
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type EnumBetStatusFieldUpdateOperationsInput = {
   set?: $Enums.BetStatus
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
-export type BetCreateNestedOneWithoutSelectionsInput = {
-  create?: Prisma.XOR<Prisma.BetCreateWithoutSelectionsInput, Prisma.BetUncheckedCreateWithoutSelectionsInput>
-  connectOrCreate?: Prisma.BetCreateOrConnectWithoutSelectionsInput
+export type BetCreateNestedOneWithoutLegsInput = {
+  create?: Prisma.XOR<Prisma.BetCreateWithoutLegsInput, Prisma.BetUncheckedCreateWithoutLegsInput>
+  connectOrCreate?: Prisma.BetCreateOrConnectWithoutLegsInput
   connect?: Prisma.BetWhereUniqueInput
 }
 
-export type BetUpdateOneRequiredWithoutSelectionsNestedInput = {
-  create?: Prisma.XOR<Prisma.BetCreateWithoutSelectionsInput, Prisma.BetUncheckedCreateWithoutSelectionsInput>
-  connectOrCreate?: Prisma.BetCreateOrConnectWithoutSelectionsInput
-  upsert?: Prisma.BetUpsertWithoutSelectionsInput
+export type BetUpdateOneRequiredWithoutLegsNestedInput = {
+  create?: Prisma.XOR<Prisma.BetCreateWithoutLegsInput, Prisma.BetUncheckedCreateWithoutLegsInput>
+  connectOrCreate?: Prisma.BetCreateOrConnectWithoutLegsInput
+  upsert?: Prisma.BetUpsertWithoutLegsInput
   connect?: Prisma.BetWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.BetUpdateToOneWithWhereWithoutSelectionsInput, Prisma.BetUpdateWithoutSelectionsInput>, Prisma.BetUncheckedUpdateWithoutSelectionsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.BetUpdateToOneWithWhereWithoutLegsInput, Prisma.BetUpdateWithoutLegsInput>, Prisma.BetUncheckedUpdateWithoutLegsInput>
 }
 
 export type BetCreateWithoutUserInput = {
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
-  selections?: Prisma.BetSelectionCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegCreateNestedManyWithoutBetInput
   transactions?: Prisma.TransactionCreateNestedManyWithoutBetInput
 }
 
 export type BetUncheckedCreateWithoutUserInput = {
-  id?: number
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
-  selections?: Prisma.BetSelectionUncheckedCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegUncheckedCreateNestedManyWithoutBetInput
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutBetInput
 }
 
@@ -663,43 +659,44 @@ export type BetScalarWhereInput = {
   AND?: Prisma.BetScalarWhereInput | Prisma.BetScalarWhereInput[]
   OR?: Prisma.BetScalarWhereInput[]
   NOT?: Prisma.BetScalarWhereInput | Prisma.BetScalarWhereInput[]
-  id?: Prisma.IntFilter<"Bet"> | number
-  userId?: Prisma.IntFilter<"Bet"> | number
+  id?: Prisma.StringFilter<"Bet"> | string
+  userId?: Prisma.StringFilter<"Bet"> | string
   type?: Prisma.EnumBetTypeFilter<"Bet"> | $Enums.BetType
   stake?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.DecimalNullableFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFilter<"Bet"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFilter<"Bet"> | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFilter<"Bet"> | Date | string
   settledAt?: Prisma.DateTimeNullableFilter<"Bet"> | Date | string | null
 }
 
 export type BetCreateWithoutTransactionsInput = {
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutBetsInput
-  selections?: Prisma.BetSelectionCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegCreateNestedManyWithoutBetInput
 }
 
 export type BetUncheckedCreateWithoutTransactionsInput = {
-  id?: number
-  userId: number
+  id?: string
+  userId: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
-  selections?: Prisma.BetSelectionUncheckedCreateNestedManyWithoutBetInput
+  legs?: Prisma.BetLegUncheckedCreateNestedManyWithoutBetInput
 }
 
 export type BetCreateOrConnectWithoutTransactionsInput = {
@@ -719,38 +716,40 @@ export type BetUpdateToOneWithWhereWithoutTransactionsInput = {
 }
 
 export type BetUpdateWithoutTransactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutBetsNestedInput
-  selections?: Prisma.BetSelectionUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUpdateManyWithoutBetNestedInput
 }
 
 export type BetUncheckedUpdateWithoutTransactionsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  selections?: Prisma.BetSelectionUncheckedUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUncheckedUpdateManyWithoutBetNestedInput
 }
 
-export type BetCreateWithoutSelectionsInput = {
+export type BetCreateWithoutLegsInput = {
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
@@ -758,42 +757,43 @@ export type BetCreateWithoutSelectionsInput = {
   transactions?: Prisma.TransactionCreateNestedManyWithoutBetInput
 }
 
-export type BetUncheckedCreateWithoutSelectionsInput = {
-  id?: number
-  userId: number
+export type BetUncheckedCreateWithoutLegsInput = {
+  id?: string
+  userId: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
   transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutBetInput
 }
 
-export type BetCreateOrConnectWithoutSelectionsInput = {
+export type BetCreateOrConnectWithoutLegsInput = {
   where: Prisma.BetWhereUniqueInput
-  create: Prisma.XOR<Prisma.BetCreateWithoutSelectionsInput, Prisma.BetUncheckedCreateWithoutSelectionsInput>
+  create: Prisma.XOR<Prisma.BetCreateWithoutLegsInput, Prisma.BetUncheckedCreateWithoutLegsInput>
 }
 
-export type BetUpsertWithoutSelectionsInput = {
-  update: Prisma.XOR<Prisma.BetUpdateWithoutSelectionsInput, Prisma.BetUncheckedUpdateWithoutSelectionsInput>
-  create: Prisma.XOR<Prisma.BetCreateWithoutSelectionsInput, Prisma.BetUncheckedCreateWithoutSelectionsInput>
+export type BetUpsertWithoutLegsInput = {
+  update: Prisma.XOR<Prisma.BetUpdateWithoutLegsInput, Prisma.BetUncheckedUpdateWithoutLegsInput>
+  create: Prisma.XOR<Prisma.BetCreateWithoutLegsInput, Prisma.BetUncheckedCreateWithoutLegsInput>
   where?: Prisma.BetWhereInput
 }
 
-export type BetUpdateToOneWithWhereWithoutSelectionsInput = {
+export type BetUpdateToOneWithWhereWithoutLegsInput = {
   where?: Prisma.BetWhereInput
-  data: Prisma.XOR<Prisma.BetUpdateWithoutSelectionsInput, Prisma.BetUncheckedUpdateWithoutSelectionsInput>
+  data: Prisma.XOR<Prisma.BetUpdateWithoutLegsInput, Prisma.BetUncheckedUpdateWithoutLegsInput>
 }
 
-export type BetUpdateWithoutSelectionsInput = {
+export type BetUpdateWithoutLegsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -801,14 +801,14 @@ export type BetUpdateWithoutSelectionsInput = {
   transactions?: Prisma.TransactionUpdateManyWithoutBetNestedInput
 }
 
-export type BetUncheckedUpdateWithoutSelectionsInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
-  userId?: Prisma.IntFieldUpdateOperationsInput | number
+export type BetUncheckedUpdateWithoutLegsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -816,51 +816,52 @@ export type BetUncheckedUpdateWithoutSelectionsInput = {
 }
 
 export type BetCreateManyUserInput = {
-  id?: number
+  id?: string
   type: $Enums.BetType
   stake: runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout: runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds: runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds: runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: $Enums.BetStatus
   placedAt?: Date | string
   settledAt?: Date | string | null
 }
 
 export type BetUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  selections?: Prisma.BetSelectionUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUpdateManyWithoutBetNestedInput
   transactions?: Prisma.TransactionUpdateManyWithoutBetNestedInput
 }
 
 export type BetUncheckedUpdateWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  selections?: Prisma.BetSelectionUncheckedUpdateManyWithoutBetNestedInput
+  legs?: Prisma.BetLegUncheckedUpdateManyWithoutBetNestedInput
   transactions?: Prisma.TransactionUncheckedUpdateManyWithoutBetNestedInput
 }
 
 export type BetUncheckedUpdateManyWithoutUserInput = {
-  id?: Prisma.IntFieldUpdateOperationsInput | number
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumBetTypeFieldUpdateOperationsInput | $Enums.BetType
   stake?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   potentialPayout?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   actualPayout?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  odds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  totalOdds?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   status?: Prisma.EnumBetStatusFieldUpdateOperationsInput | $Enums.BetStatus
   placedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   settledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -872,12 +873,12 @@ export type BetUncheckedUpdateManyWithoutUserInput = {
  */
 
 export type BetCountOutputType = {
-  selections: number
+  legs: number
   transactions: number
 }
 
 export type BetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  selections?: boolean | BetCountOutputTypeCountSelectionsArgs
+  legs?: boolean | BetCountOutputTypeCountLegsArgs
   transactions?: boolean | BetCountOutputTypeCountTransactionsArgs
 }
 
@@ -894,8 +895,8 @@ export type BetCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensio
 /**
  * BetCountOutputType without action
  */
-export type BetCountOutputTypeCountSelectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BetSelectionWhereInput
+export type BetCountOutputTypeCountLegsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BetLegWhereInput
 }
 
 /**
@@ -913,12 +914,12 @@ export type BetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   stake?: boolean
   potentialPayout?: boolean
   actualPayout?: boolean
-  odds?: boolean
+  totalOdds?: boolean
   status?: boolean
   placedAt?: boolean
   settledAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  selections?: boolean | Prisma.Bet$selectionsArgs<ExtArgs>
+  legs?: boolean | Prisma.Bet$legsArgs<ExtArgs>
   transactions?: boolean | Prisma.Bet$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.BetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bet"]>
@@ -930,7 +931,7 @@ export type BetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   stake?: boolean
   potentialPayout?: boolean
   actualPayout?: boolean
-  odds?: boolean
+  totalOdds?: boolean
   status?: boolean
   placedAt?: boolean
   settledAt?: boolean
@@ -944,7 +945,7 @@ export type BetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
   stake?: boolean
   potentialPayout?: boolean
   actualPayout?: boolean
-  odds?: boolean
+  totalOdds?: boolean
   status?: boolean
   placedAt?: boolean
   settledAt?: boolean
@@ -958,16 +959,16 @@ export type BetSelectScalar = {
   stake?: boolean
   potentialPayout?: boolean
   actualPayout?: boolean
-  odds?: boolean
+  totalOdds?: boolean
   status?: boolean
   placedAt?: boolean
   settledAt?: boolean
 }
 
-export type BetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "stake" | "potentialPayout" | "actualPayout" | "odds" | "status" | "placedAt" | "settledAt", ExtArgs["result"]["bet"]>
+export type BetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "stake" | "potentialPayout" | "actualPayout" | "totalOdds" | "status" | "placedAt" | "settledAt", ExtArgs["result"]["bet"]>
 export type BetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  selections?: boolean | Prisma.Bet$selectionsArgs<ExtArgs>
+  legs?: boolean | Prisma.Bet$legsArgs<ExtArgs>
   transactions?: boolean | Prisma.Bet$transactionsArgs<ExtArgs>
   _count?: boolean | Prisma.BetCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -982,17 +983,17 @@ export type $BetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   name: "Bet"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
-    selections: Prisma.$BetSelectionPayload<ExtArgs>[]
+    legs: Prisma.$BetLegPayload<ExtArgs>[]
     transactions: Prisma.$TransactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    id: number
-    userId: number
+    id: string
+    userId: string
     type: $Enums.BetType
     stake: runtime.Decimal
     potentialPayout: runtime.Decimal
     actualPayout: runtime.Decimal | null
-    odds: runtime.Decimal
+    totalOdds: runtime.Decimal
     status: $Enums.BetStatus
     placedAt: Date
     settledAt: Date | null
@@ -1391,7 +1392,7 @@ readonly fields: BetFieldRefs;
 export interface Prisma__BetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  selections<T extends Prisma.Bet$selectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bet$selectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BetSelectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  legs<T extends Prisma.Bet$legsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bet$legsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BetLegPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transactions<T extends Prisma.Bet$transactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Bet$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1422,13 +1423,13 @@ export interface Prisma__BetClient<T, Null = never, ExtArgs extends runtime.Type
  * Fields of the Bet model
  */
 export interface BetFieldRefs {
-  readonly id: Prisma.FieldRef<"Bet", 'Int'>
-  readonly userId: Prisma.FieldRef<"Bet", 'Int'>
+  readonly id: Prisma.FieldRef<"Bet", 'String'>
+  readonly userId: Prisma.FieldRef<"Bet", 'String'>
   readonly type: Prisma.FieldRef<"Bet", 'BetType'>
   readonly stake: Prisma.FieldRef<"Bet", 'Decimal'>
   readonly potentialPayout: Prisma.FieldRef<"Bet", 'Decimal'>
   readonly actualPayout: Prisma.FieldRef<"Bet", 'Decimal'>
-  readonly odds: Prisma.FieldRef<"Bet", 'Decimal'>
+  readonly totalOdds: Prisma.FieldRef<"Bet", 'Decimal'>
   readonly status: Prisma.FieldRef<"Bet", 'BetStatus'>
   readonly placedAt: Prisma.FieldRef<"Bet", 'DateTime'>
   readonly settledAt: Prisma.FieldRef<"Bet", 'DateTime'>
@@ -1828,27 +1829,27 @@ export type BetDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * Bet.selections
+ * Bet.legs
  */
-export type Bet$selectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Bet$legsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the BetSelection
+   * Select specific fields to fetch from the BetLeg
    */
-  select?: Prisma.BetSelectionSelect<ExtArgs> | null
+  select?: Prisma.BetLegSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the BetSelection
+   * Omit specific fields from the BetLeg
    */
-  omit?: Prisma.BetSelectionOmit<ExtArgs> | null
+  omit?: Prisma.BetLegOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.BetSelectionInclude<ExtArgs> | null
-  where?: Prisma.BetSelectionWhereInput
-  orderBy?: Prisma.BetSelectionOrderByWithRelationInput | Prisma.BetSelectionOrderByWithRelationInput[]
-  cursor?: Prisma.BetSelectionWhereUniqueInput
+  include?: Prisma.BetLegInclude<ExtArgs> | null
+  where?: Prisma.BetLegWhereInput
+  orderBy?: Prisma.BetLegOrderByWithRelationInput | Prisma.BetLegOrderByWithRelationInput[]
+  cursor?: Prisma.BetLegWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.BetSelectionScalarFieldEnum | Prisma.BetSelectionScalarFieldEnum[]
+  distinct?: Prisma.BetLegScalarFieldEnum | Prisma.BetLegScalarFieldEnum[]
 }
 
 /**

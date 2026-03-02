@@ -30,6 +30,10 @@ Thumbs.db
 
 # Prisma
 prisma/migrations/*.sql.bak
+prisma/generated/
 
 # Docker
 docker-compose.override.yml
+
+# Bruno
+dingobet-api/bruno/environments/local.bru
