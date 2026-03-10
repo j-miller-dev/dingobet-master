@@ -1,0 +1,15 @@
+meta {
+  name: Sync Events
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/admin/sync-events/soccer_australia_aleague
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

@@ -1,0 +1,15 @@
+meta {
+  name: Get Events By Sport
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/events?sport=soccer_australia_aleague
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

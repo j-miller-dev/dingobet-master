@@ -25,4 +25,23 @@ const router: Router = Router();
  * The URL would look like: GET /api/events?sport=soccer_epl
  */
 
+router.get("/", authenticate, async (req: Request, res: Response) => {
+  try {
+    const { sport } = req.query;
+
+    const where = sport
+      ? { sportId: sport as string, status: "UPCOMING" as const }
+      : { status: "UPCOMING" as const };
+
+    const events = await prisma.event.findMany({
+      where,
+      include: { homeTeam: true, awayTeam: true, sport: true },
+      orderBy: { commenceTime: "asc" },
+    });
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Server contact failed" });
+  }
+});
+
 export default router;
