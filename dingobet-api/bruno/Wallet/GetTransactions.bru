@@ -1,0 +1,15 @@
+meta {
+  name: Get Transactions
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/wallet/transactions
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

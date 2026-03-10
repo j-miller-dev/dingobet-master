@@ -1,0 +1,15 @@
+meta {
+  name: Sync Sports
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/admin/sync-sports
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

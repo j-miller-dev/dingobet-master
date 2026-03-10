@@ -1,0 +1,15 @@
+meta {
+  name: Get Sports
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/sports
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

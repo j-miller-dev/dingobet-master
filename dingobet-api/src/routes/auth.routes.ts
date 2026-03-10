@@ -45,7 +45,10 @@ router.post("/login", async (req: Request, res: Response) => {
         role: user.role,
       },
       process.env.JWT_SECRET!,
-      { expiresIn: (process.env.ACCESS_TOKEN_EXPIRY ?? "15m") as jwt.SignOptions["expiresIn"] },
+      {
+        expiresIn: (process.env.ACCESS_TOKEN_EXPIRY ??
+          "15m") as jwt.SignOptions["expiresIn"],
+      },
     );
 
     // generate fresh token, random string, stored in db so it can be revoked
@@ -140,6 +143,76 @@ router.post("/register", async (req: Request, res: Response) => {
     res.status(500).json({
       message: "Registration failed",
     });
+  }
+});
+
+/**
+ * REFRESH ROUTE
+ * POST /api/auth/refresh
+ */
+router.post("/refresh", async (req: Request, res: Response) => {
+  try {
+    // 1. Get refreshToken from req.body
+
+    const { refreshToken } = req.body;
+
+    // 2. Find Session row by refreshToken — return 401 if not found
+    const session = await prisma.session.findUnique({
+      where: { refreshToken },
+    });
+    if (!session)
+      return res.status(401).json({ message: "Invalid refresh token" });
+
+    // 3. Check session.expiresAt > now — return 401 if expired
+    if (session.expiresAt < new Date())
+      return res.status(401).json({ message: "Refresh token expired" });
+
+    // 4. Sign a new accessToken (jwt.sign) with user's id, email, role
+    //    (need to fetch user to get email + role)
+
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+    });
+    if (!user) return res.status(401).json({ message: "User not found" });
+
+    const accessToken = jwt.sign(
+      { sub: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: (process.env.ACCESS_TOKEN_EXPIRY ??
+          "15m") as jwt.SignOptions["expiresIn"],
+      },
+    );
+
+    // 5. Return { accessToken }
+    res.json({ accessToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
+ * LOGOUT ROUTE
+ * POST /api/auth/logout
+ */
+router.post("/logout", async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token required" });
+    }
+
+    await prisma.session.delete({ where: { refreshToken } });
+
+    res.json({ message: "Logged out" });
+  } catch (error) {
+    if (error instanceof Error && "code" in error && (error as { code: string }).code === "P2025") {
+      return res.json({ message: "Logged out" });
+    }
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
