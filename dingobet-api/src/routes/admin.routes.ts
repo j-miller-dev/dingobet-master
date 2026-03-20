@@ -100,4 +100,90 @@ router.post(
   },
 );
 
+/**
+ * SYNC ODDS ROUTE
+ * POST /api/admin/sync-odds/:sportKey
+ *
+ * Fetches current odds for a sport and stores a new OddsSnapshot per bookmaker/market.
+ * Snapshots are always INSERTED (not upserted) — they are historical records.
+ *
+ * The odds data comes from fetchEvents() — it already hits the /odds endpoint
+ * which includes bookmakers and markets in the response. No new service function needed.
+ *
+ * IMPORTANT — the nested loop structure:
+ *   for each event
+ *     └─ find the event in DB by externalId  ← need the internal id for the foreign key
+ *        for each bookmaker in event.bookmakers
+ *          └─ for each market in bookmaker.markets
+ *               └─ prisma.oddsSnapshot.create(...)
+ *
+ * Steps:
+ * 1. Get sportKey from req.params
+ * 2. Call fetchEvents(sportKey) — reuse the existing service function
+ * 3. Track a snapshotCount (increment each time you create a snapshot)
+ * 4. For each event in the results:
+ *    a. Find the matching DB event:
+ *       prisma.event.findUnique({ where: { externalId: event.id } })
+ *       — skip this event (continue) if not found
+ *    b. Loop over event.bookmakers
+ *    c. Inside that, loop over bookmaker.markets
+ *    d. Create a snapshot:
+ *       prisma.oddsSnapshot.create({
+ *         data: {
+ *           eventId:   dbEvent.id,
+ *           bookmaker: bookmaker.key,
+ *           market:    market.key,
+ *           outcomes:  market.outcomes,
+ *         }
+ *       })
+ *    e. Increment snapshotCount
+ * 5. Return { message: "Odds synced", count: snapshotCount }
+ *
+ * Odds API fields to map:
+ *   event.id            → look up dbEvent by externalId
+ *   bookmaker.key       → bookmaker  (e.g. "tab", "sportsbet")
+ *   market.key          → market     (e.g. "h2h")
+ *   market.outcomes     → outcomes   (array of { name, price, point? })
+ *
+ * NOTE: fetchedAt is handled automatically by @default(now()) in the schema.
+ */
+
+router.post(
+  "/sync-odds/:sportKey",
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { sportKey } = req.params;
+      const events = await fetchEvents(sportKey);
+
+      let snapshotCount = 0;
+      for (const event of events) {
+        const dbEvent = await prisma.event.findUnique({
+          where: { externalId: event.id },
+        });
+        if (!dbEvent) continue;
+
+        for (const bookmaker of event.bookmakers) {
+          for (const market of bookmaker.markets) {
+            await prisma.oddsSnapshot.create({
+              data: {
+                eventId: dbEvent.id,
+                bookmaker: bookmaker.key,
+                market: market.key,
+                outcomes: market.outcomes as any,
+              },
+            });
+
+            snapshotCount++;
+          }
+        }
+      }
+
+      res.json({ message: "Odds synced", count: snapshotCount });
+    } catch (error) {
+      res.status(500).json({ message: "Sync failed." });
+    }
+  },
+);
+
 export default router;

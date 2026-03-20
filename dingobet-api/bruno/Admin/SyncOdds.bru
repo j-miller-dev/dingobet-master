@@ -1,0 +1,15 @@
+meta {
+  name: Sync Odds
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/admin/sync-odds/soccer_australia_aleague
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}

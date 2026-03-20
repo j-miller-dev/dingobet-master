@@ -1,0 +1,15 @@
+meta {
+  name: Get Odds
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/odds/cmmse3zej000qzwm6g1k2d3o6
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
