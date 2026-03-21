@@ -351,7 +351,7 @@ router.post(
       }
       return res.json({ message: "Event settled", settled: settledCount });
     } catch (error) {
-      return res.status(400).json({ message: "Settlement Failed." });
+      res.status(500).json({ message: "Settlement failed" });
     }
   },
 );
