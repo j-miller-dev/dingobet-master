@@ -1,0 +1,21 @@
+meta {
+  name: Settle Event
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/admin/settle-event/EVENT_ID_HERE
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "result": "HOME_WIN"
+  }
+}
