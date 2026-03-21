@@ -96,4 +96,35 @@ router.post("/", authenticate, async (req: Request, res: Response) => {
   }
 });
 
+router.get("/", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const bets = await prisma.bet.findMany({
+      where: { userId },
+      include: { legs: true },
+      orderBy: { placedAt: "desc" },
+    });
+    res.json(bets);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const bet = await prisma.bet.findUnique({
+      where: { id: req.params.id },
+      include: {
+        legs: { include: { event: { include: { homeTeam: true, awayTeam: true } } } },
+      },
+    });
+    if (!bet || bet.userId !== userId)
+      return res.status(404).json({ message: "Bet not found" });
+    res.json(bet);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

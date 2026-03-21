@@ -1,0 +1,15 @@
+meta {
+  name: Get Bets
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/bets
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
