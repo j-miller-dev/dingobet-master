@@ -20,6 +20,8 @@ import { Router, Request, Response } from "express";
 import { fetchEvents, fetchSports } from "../services/odds.service.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
+import { validate } from "../middleware/validate.middleware.js";
+import { settleEventSchema } from "../schemas/admin.schemas.js";
 
 const router: Router = Router();
 
@@ -268,6 +270,7 @@ router.post(
 router.post(
   "/settle-event/:eventId",
   authenticate,
+  validate(settleEventSchema),
   async (req: Request, res: Response) => {
     // implement me
     try {

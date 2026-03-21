@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { Router, Request, Response } from "express";
+import { validate } from "../middleware/validate.middleware.js";
+import { amountSchema } from "../schemas/wallet.schemas.js";
 
 const router: Router = Router();
 //  For the wallet, it's two endpoints:
@@ -46,5 +48,91 @@ router.get("/transactions", async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server Error" });
   }
 });
+
+router.post(
+  "/deposit",
+  validate(amountSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const { amount } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid amount" });
+      }
+
+      const wallet = await prisma.wallet.findUnique({
+        where: { userId },
+      });
+      if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+      const updated = await prisma.$transaction(async (tx) => {
+        const w = await tx.wallet.update({
+          where: { userId },
+          data: { balance: { increment: amount } },
+        });
+        await tx.transaction.create({
+          data: {
+            userId,
+            walletId: wallet.id,
+            type: "DEPOSIT",
+            amount,
+            balanceBefore: wallet.balance,
+            balanceAfter: Number(wallet.balance) + amount,
+            status: "COMPLETED",
+          },
+        });
+        return w;
+      });
+
+      res.json({ balance: updated.balance, currency: updated.currency });
+    } catch (error) {
+      res.status(500).json({ message: "server error" });
+    }
+  },
+);
+
+router.post(
+  "/withdraw",
+  validate(amountSchema),
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.user!.id;
+      const { amount } = req.body;
+
+      if (!amount || amount <= 0)
+        return res.status(400).json({ message: "Invalid amount" });
+
+      const wallet = await prisma.wallet.findUnique({ where: { userId } });
+      if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+      if (Number(wallet.balance) < amount)
+        return res.status(400).json({ message: "Insufficient funds" });
+
+      const updated = await prisma.$transaction(async (tx) => {
+        const w = await tx.wallet.update({
+          where: { userId },
+          data: { balance: { decrement: amount } },
+        });
+        await tx.transaction.create({
+          data: {
+            userId,
+            walletId: wallet.id,
+            type: "WITHDRAWAL",
+            amount,
+            balanceBefore: wallet.balance,
+            balanceAfter: Number(wallet.balance) - amount,
+            status: "COMPLETED",
+          },
+        });
+        return w;
+      });
+
+      res.json({ balance: updated.balance, currency: updated.currency });
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
+    }
+  },
+);
 
 export default router;
