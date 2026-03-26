@@ -1,9 +1,13 @@
-import z, { number } from "zod";
+import z from "zod";
 
-export const placeBetSchema = z.object({
+const legInputSchema = z.object({
   eventId: z.string(),
   bookmaker: z.string(),
   market: z.string(),
   selection: z.string(),
-  stake: number().positive(),
+});
+
+export const placeBetSchema = z.object({
+  legs: z.array(legInputSchema).min(1).max(20),
+  stake: z.number().positive(),
 });
