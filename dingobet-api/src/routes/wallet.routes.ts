@@ -3,6 +3,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { Router, Request, Response } from "express";
 import { validate } from "../middleware/validate.middleware.js";
 import { amountSchema } from "../schemas/wallet.schemas.js";
+import { getIO } from "../lib/socket.js";
 
 const router: Router = Router();
 //  For the wallet, it's two endpoints:
@@ -85,10 +86,20 @@ router.post(
         return w;
       });
 
+      // Notify the user their wallet has been updated — outside transaction so it only fires on success
+      getIO().to(`user:${userId}`).emit("wallet:updated", {
+        type: "deposit",
+        amount,
+        balance: updated.balance,
+      });
+
       res.json({ balance: updated.balance, currency: updated.currency });
     } catch (error) {
       res.status(500).json({ message: "server error" });
     }
+   
+
+
   },
 );
 
@@ -126,6 +137,13 @@ router.post(
           },
         });
         return w;
+      });
+
+      // Notify the user their wallet has been updated — outside transaction so it only fires on success
+      getIO().to(`user:${userId}`).emit("wallet:updated", {
+        type: "withdrawal",
+        amount,
+        balance: updated.balance,
       });
 
       res.json({ balance: updated.balance, currency: updated.currency });

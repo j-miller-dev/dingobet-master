@@ -22,6 +22,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { settleEventSchema } from "../schemas/admin.schemas.js";
+import { getIO } from "../lib/socket.js";
 
 const router: Router = Router();
 
@@ -179,6 +180,12 @@ router.post(
             snapshotCount++;
           }
         }
+
+        // Notify any clients watching this event that odds have been updated.
+        // Clients join event:{id} rooms via the subscribe:event socket event.
+        getIO().to(`event:${dbEvent.id}`).emit("odds:updated", {
+          eventId: dbEvent.id,
+        });
       }
 
       res.json({ message: "Odds synced", count: snapshotCount });
@@ -309,6 +316,9 @@ router.post(
       let settledCount = 0;
 
       for (const leg of legs) {
+        let settledStatus: string | null = null;
+        let settledPayout: number | null = null;
+
         // Determine this leg's outcome.
         // DRAW → VOID. Otherwise compare selection to the winning team name.
         const legOutcome =
@@ -343,12 +353,16 @@ router.post(
           const wonLegs = allLegs.filter((l) => l.status === "WON");
 
           if (hasLostLeg) {
+            settledStatus = "LOST";
             // At least one leg lost — the whole bet is lost, no payout.
             await tx.bet.update({
               where: { id: leg.betId },
               data: { status: "LOST", settledAt: new Date() },
             });
           } else if (allVoid) {
+            settledStatus = "VOID";
+            settledPayout = Number(leg.bet.stake);
+
             // Every leg was voided (e.g. all events drew) — refund the full stake.
             const wallet = await tx.wallet.findUnique({
               where: { userId: leg.bet.userId },
@@ -386,6 +400,9 @@ router.post(
                       100,
                   ) / 100;
 
+            settledStatus = "WON";
+            settledPayout = payout;
+
             const wallet = await tx.wallet.findUnique({
               where: { userId: leg.bet.userId },
             });
@@ -395,7 +412,11 @@ router.post(
             });
             await tx.bet.update({
               where: { id: leg.betId },
-              data: { status: "WON", actualPayout: payout, settledAt: new Date() },
+              data: {
+                status: "WON",
+                actualPayout: payout,
+                settledAt: new Date(),
+              },
             });
             await tx.transaction.create({
               data: {
@@ -411,7 +432,14 @@ router.post(
             });
           }
         });
-
+        // Notify the user their bet has been settled
+        if (settledStatus) {
+          getIO().to(`user:${leg.bet.userId}`).emit("bet:settled", {
+            betId: leg.betId,
+            status: settledStatus,
+            payout: settledPayout,
+          });
+        }
         settledCount++;
       }
 
