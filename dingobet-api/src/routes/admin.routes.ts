@@ -23,12 +23,14 @@ import { prisma } from "../lib/prisma.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { settleEventSchema } from "../schemas/admin.schemas.js";
 import { getIO } from "../lib/socket.js";
+import { authorise } from "../middleware/authorise.middleware.js";
 
 const router: Router = Router();
 
 router.post(
   "/sync-sports",
   authenticate,
+  authorise("ADMIN", "SUPER_ADMIN"),
   async (_req: Request, res: Response) => {
     try {
       const sports = await fetchSports();
@@ -62,6 +64,8 @@ router.post(
 router.post(
   "/sync-events/:sportKey",
   authenticate,
+  authorise("ADMIN", "SUPER_ADMIN"),
+
   async (req: Request, res: Response) => {
     try {
       const { sportKey } = req.params;
@@ -154,6 +158,8 @@ router.post(
 router.post(
   "/sync-odds/:sportKey",
   authenticate,
+
+  authorise("ADMIN", "SUPER_ADMIN"),
   async (req: Request, res: Response) => {
     try {
       const { sportKey } = req.params;
@@ -277,6 +283,8 @@ router.post(
 router.post(
   "/settle-event/:eventId",
   authenticate,
+
+  authorise("ADMIN", "SUPER_ADMIN"),
   validate(settleEventSchema),
   async (req: Request, res: Response) => {
     try {
