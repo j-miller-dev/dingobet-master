@@ -19,6 +19,11 @@ router.post(
       // userId comes from the JWT token (set by the authenticate middleware).
       const { legs: legInputs, stake } = req.body;
       const userId = req.user!.id;
+      // Prevents the same leg running twice
+      const eventIds = legInputs.map((l: { eventId: string }) => l.eventId);
+      const hasDuplicates = new Set(eventIds).size !== eventIds.length;
+      if (hasDuplicates)
+        return res.status(400).json({ message: "duplicate events in legs" });
 
       // --- STEP 2: Validate each leg and resolve the odds ---
       // We can't trust the client to send us the correct odds — we always
@@ -57,8 +62,9 @@ router.post(
         if (!snapshot)
           return res
             .status(404)
-            .json({ message: `Odds not available for event ${legInput.eventId}` });
-
+            .json({
+              message: `Odds not available for event ${legInput.eventId}`,
+            });
         // 2c. Each snapshot has an `outcomes` JSON array, e.g.:
         // [{ name: "Melbourne Victory", price: 2.5 }, { name: "Sydney FC", price 1.8 }]
         // Find the outcome matching the user's selection to get its price (decimal odds).
@@ -97,7 +103,8 @@ router.post(
         // are atomic — no risk of two concurrent bets both passing the check.
         const wallet = await tx.wallet.findUnique({ where: { userId } });
         if (!wallet) throw new Error("wallet not found");
-        if (Number(wallet.balance) < stake) throw new Error("Insufficient funds");
+        if (Number(wallet.balance) < stake)
+          throw new Error("Insufficient funds");
 
         // 4b. Deduct the stake from the wallet.
         // `decrement` is a Prisma helper — it's equivalent to balance = balance - stake.

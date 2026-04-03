@@ -1,0 +1,21 @@
+meta {
+  name: Withdraw
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/wallet/withdraw
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "amount": 50.00
+  }
+}
