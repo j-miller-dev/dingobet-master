@@ -5,6 +5,14 @@ import crypto from "crypto";
 import { validate } from "../middleware/validate.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { loginSchema, registerSchema } from "../schemas/auth.schemas.js";
+import rateLimit from "express-rate-limit";
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { message: "Too many attempts, please try again later" },
+});
+
 const router = Router();
 
 /**
@@ -12,6 +20,8 @@ const router = Router();
  */
 router.post(
   "/login",
+
+  authLimiter,
   validate(loginSchema),
   async (req: Request, res: Response) => {
     try {
@@ -95,6 +105,8 @@ router.post(
 
 router.post(
   "/register",
+
+  authLimiter,
   validate(registerSchema),
   async (req: Request, res: Response) => {
     try {
