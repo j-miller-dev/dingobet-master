@@ -1,0 +1,35 @@
+meta {
+  name: Place Multi Bet
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/bets
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: Bearer {{accessToken}}
+}
+
+body:json {
+  {
+    "legs": [
+      {
+        "eventId": "cmn6p9y7e0036x5m6q7w9yi5c",
+        "bookmaker": "neds",
+        "market": "h2h",
+        "selection": "Edmonton Oilers"
+      },
+      {
+        "eventId": "cmn6p9y7j0038x5m6jv1iszfj",
+        "bookmaker": "neds",
+        "market": "h2h",
+        "selection": "Los Angeles Kings"
+      }
+    ],
+    "stake": 20.00
+  }
+}

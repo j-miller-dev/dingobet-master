@@ -69,4 +69,41 @@ router.patch("/me", authenticate, async (req: Request, res: Response) => {
   }
 });
 
+router.get("/me/favourites", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const favourites = await prisma.favouriteSport.findMany({
+      where: { userId },
+      include: { sport: true },
+    });
+    res.json(favourites.map((f) => f.sport));
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.post("/me/favourites", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const { sportId } = req.body;
+    await prisma.favouriteSport.create({ data: { userId, sportId } });
+    res.status(201).json({ message: "Favourite added" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.delete("/me/favourites/:sportId", authenticate, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user!.id;
+    const { sportId } = req.params;
+    await prisma.favouriteSport.delete({
+      where: { userId_sportId: { userId, sportId } },
+    });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

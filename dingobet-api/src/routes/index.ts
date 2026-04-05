@@ -7,6 +7,7 @@ import oddsRoutes from './odds.routes.js';
 import betsRoutes from './bets.routes.js';
 import walletRoutes from './wallet.routes.js';
 import adminRoutes from './admin.routes.js';
+import notificationsRoutes from './notifications.routes.js';
 
 const router: Router = Router();
 
@@ -18,5 +19,6 @@ router.use('/odds', oddsRoutes);
 router.use('/bets', betsRoutes);
 router.use('/wallet', walletRoutes);
 router.use('/admin', adminRoutes);
+router.use('/notifications', notificationsRoutes);
 
 export default router;

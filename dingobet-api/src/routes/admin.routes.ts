@@ -447,13 +447,55 @@ router.post(
             status: settledStatus,
             payout: settledPayout,
           });
+
+          // notification record
+          await prisma.notification.create({
+            data: {
+              userId: leg.bet.userId,
+              type: "BET_SETTLED",
+              title:
+                settledStatus === "WON"
+                  ? "Bet Won 🎉"
+                  : settledStatus === "VOID"
+                    ? "Bet Voided"
+                    : "Bet Lost",
+              message:
+                settledStatus === "WON"
+                  ? `Your bet paid out $${settledPayout}`
+                  : settledStatus === "VOID"
+                    ? `Your stake of $${leg.bet.stake} has been refunded`
+                    : "Your bet did not win this time",
+            },
+          });
         }
+
         settledCount++;
       }
 
       return res.json({ message: "Event settled", settled: settledCount });
     } catch (error) {
       res.status(500).json({ message: "Settlement failed" });
+    }
+  },
+);
+
+router.get(
+  "/events",
+  authenticate,
+  authorise("ADMIN", "SUPER_ADMIN"),
+  async (_req: Request, res: Response) => {
+    try {
+      const events = await prisma.event.findMany({
+        where: {
+          status: "UPCOMING",
+          commenceTime: { lt: new Date() },
+        },
+        include: { homeTeam: true, awayTeam: true, sport: true },
+        orderBy: { commenceTime: "asc" },
+      });
+      res.json(events);
+    } catch (error) {
+      res.status(500).json({ message: "Server error" });
     }
   },
 );

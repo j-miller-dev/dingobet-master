@@ -83,6 +83,7 @@ router.post(
             status: "COMPLETED",
           },
         });
+
         return w;
       });
 
@@ -93,13 +94,19 @@ router.post(
         balance: updated.balance,
       });
 
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: "DEPOSIT_COMPLETE",
+          title: "Deposit successful",
+          message: `$${amount} has been added to your wallet`,
+        },
+      });
+
       res.json({ balance: updated.balance, currency: updated.currency });
     } catch (error) {
       res.status(500).json({ message: "server error" });
     }
-   
-
-
   },
 );
 
@@ -136,6 +143,7 @@ router.post(
             status: "COMPLETED",
           },
         });
+
         return w;
       });
 
@@ -144,6 +152,14 @@ router.post(
         type: "withdrawal",
         amount,
         balance: updated.balance,
+      });
+      await prisma.notification.create({
+        data: {
+          userId,
+          type: "WITHDRAWAL_COMPLETE",
+          title: "Withdrawal successful",
+          message: `$${amount} has been withdrawn from your wallet`,
+        },
       });
 
       res.json({ balance: updated.balance, currency: updated.currency });

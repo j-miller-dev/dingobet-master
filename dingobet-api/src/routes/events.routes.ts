@@ -44,4 +44,25 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
   }
 });
 
+router.get("/:id", authenticate, async (req: Request, res: Response) => {
+  try {
+    const event = await prisma.event.findUnique({
+      where: { id: req.params.id },
+      include: {
+        homeTeam: true,
+        awayTeam: true,
+        sport: true,
+        oddsSnapshots: {
+          orderBy: { fetchedAt: "desc" },
+          take: 50,
+        },
+      },
+    });
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;
