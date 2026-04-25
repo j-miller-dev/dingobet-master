@@ -5,6 +5,7 @@ import Providers from "./providers";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Navbar from "@/components/ui/Navbar";
 import BetSlip from "@/components/bet/BetSlip";
+import BottomNav from "@/components/layout/BottomNav";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -28,7 +29,8 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <BetSlip />
-          {children}
+          <main className="pb-20">{children}</main>
+          <BottomNav />
         </Providers>
       </body>
     </html>
