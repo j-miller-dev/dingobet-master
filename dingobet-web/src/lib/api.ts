@@ -14,4 +14,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// On 401, clear auth and redirect to login
+api.interceptors.response.use(
+  (res) => res,
+  (error) => {
+    if (error?.response?.status === 401) {
+      useAuthStore.getState().clearAuth();
+      if (typeof window !== "undefined") window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default api;

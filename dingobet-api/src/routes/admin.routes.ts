@@ -22,8 +22,9 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { settleEventSchema } from "../schemas/admin.schemas.js";
-import { getIO } from "../lib/socket.js";
 import { authorise } from "../middleware/authorise.middleware.js";
+import { getIO } from "../lib/socket.js";
+import { settleEvent } from "../services/settlement.service.js";
 
 const router: Router = Router();
 
@@ -291,188 +292,13 @@ router.post(
       const { eventId } = req.params;
       const { result } = req.body;
 
-      // Load the event with team names so we can match selections against the winning team.
-      const event = await prisma.event.findUnique({
-        where: { id: eventId },
-        include: { homeTeam: true, awayTeam: true },
-      });
+      const event = await prisma.event.findUnique({ where: { id: eventId } });
       if (!event) return res.status(404).json({ message: "Event not found" });
       if (event.status === "COMPLETED")
         return res.status(400).json({ message: "Event already completed" });
 
-      // Mark the event as completed with the given result.
-      await prisma.event.update({
-        where: { id: eventId },
-        data: { status: "COMPLETED", result },
-      });
-
-      // Determine the winning team name to compare against each leg's selection.
-      // DRAW has no winner — legs on a drawn match are VOID.
-      const winningTeam =
-        result === "HOME_WIN"
-          ? event.homeTeam.name
-          : result === "AWAY_WIN"
-            ? event.awayTeam.name
-            : null;
-
-      // Fetch all pending legs for this event, including the parent bet.
-      const legs = await prisma.betLeg.findMany({
-        where: { eventId, status: "PENDING" },
-        include: { bet: true },
-      });
-
-      let settledCount = 0;
-
-      for (const leg of legs) {
-        let settledStatus: string | null = null;
-        let settledPayout: number | null = null;
-
-        // Determine this leg's outcome.
-        // DRAW → VOID. Otherwise compare selection to the winning team name.
-        const legOutcome =
-          result === "DRAW"
-            ? "VOID"
-            : leg.selection === winningTeam
-              ? "WON"
-              : "LOST";
-
-        await prisma.$transaction(async (tx) => {
-          // Update this leg's status.
-          await tx.betLeg.update({
-            where: { id: leg.id },
-            data: { status: legOutcome },
-          });
-
-          // Re-fetch ALL legs on the parent bet to check overall settlement status.
-          // For a SINGLE this is always one leg. For a MULTI there may be others
-          // still PENDING on future events.
-          const allLegs = await tx.betLeg.findMany({
-            where: { betId: leg.betId },
-          });
-
-          const hasPendingLegs = allLegs.some((l) => l.status === "PENDING");
-
-          // Not all legs settled yet — leave the bet PENDING and move on.
-          if (hasPendingLegs) return;
-
-          // All legs are now settled — determine the overall bet outcome.
-          const hasLostLeg = allLegs.some((l) => l.status === "LOST");
-          const allVoid = allLegs.every((l) => l.status === "VOID");
-          const wonLegs = allLegs.filter((l) => l.status === "WON");
-
-          if (hasLostLeg) {
-            settledStatus = "LOST";
-            // At least one leg lost — the whole bet is lost, no payout.
-            await tx.bet.update({
-              where: { id: leg.betId },
-              data: { status: "LOST", settledAt: new Date() },
-            });
-          } else if (allVoid) {
-            settledStatus = "VOID";
-            settledPayout = Number(leg.bet.stake);
-
-            // Every leg was voided (e.g. all events drew) — refund the full stake.
-            const wallet = await tx.wallet.findUnique({
-              where: { userId: leg.bet.userId },
-            });
-            await tx.wallet.update({
-              where: { userId: leg.bet.userId },
-              data: { balance: { increment: leg.bet.stake } },
-            });
-            await tx.bet.update({
-              where: { id: leg.betId },
-              data: { status: "VOID", settledAt: new Date() },
-            });
-            await tx.transaction.create({
-              data: {
-                userId: leg.bet.userId,
-                walletId: wallet!.id,
-                betId: leg.betId,
-                type: "BET_REFUND",
-                amount: leg.bet.stake,
-                balanceBefore: wallet!.balance,
-                balanceAfter: Number(wallet!.balance) + Number(leg.bet.stake),
-                status: "COMPLETED",
-              },
-            });
-          } else {
-            // All legs WON, or a mix of WON + VOID — the bet is won.
-            // If any legs were VOID, remove them from the parlay and recalculate
-            // payout using only the WON legs' odds. Otherwise use stored potentialPayout.
-            const payout =
-              wonLegs.length === allLegs.length
-                ? Number(leg.bet.potentialPayout)
-                : Math.round(
-                    Number(leg.bet.stake) *
-                      wonLegs.reduce((acc, l) => acc * Number(l.odds), 1) *
-                      100,
-                  ) / 100;
-
-            settledStatus = "WON";
-            settledPayout = payout;
-
-            const wallet = await tx.wallet.findUnique({
-              where: { userId: leg.bet.userId },
-            });
-            await tx.wallet.update({
-              where: { userId: leg.bet.userId },
-              data: { balance: { increment: payout } },
-            });
-            await tx.bet.update({
-              where: { id: leg.betId },
-              data: {
-                status: "WON",
-                actualPayout: payout,
-                settledAt: new Date(),
-              },
-            });
-            await tx.transaction.create({
-              data: {
-                userId: leg.bet.userId,
-                walletId: wallet!.id,
-                betId: leg.betId,
-                type: "BET_WON",
-                amount: payout,
-                balanceBefore: wallet!.balance,
-                balanceAfter: Number(wallet!.balance) + payout,
-                status: "COMPLETED",
-              },
-            });
-          }
-        });
-        // Notify the user their bet has been settled
-        if (settledStatus) {
-          getIO().to(`user:${leg.bet.userId}`).emit("bet:settled", {
-            betId: leg.betId,
-            status: settledStatus,
-            payout: settledPayout,
-          });
-
-          // notification record
-          await prisma.notification.create({
-            data: {
-              userId: leg.bet.userId,
-              type: "BET_SETTLED",
-              title:
-                settledStatus === "WON"
-                  ? "Bet Won 🎉"
-                  : settledStatus === "VOID"
-                    ? "Bet Voided"
-                    : "Bet Lost",
-              message:
-                settledStatus === "WON"
-                  ? `Your bet paid out $${settledPayout}`
-                  : settledStatus === "VOID"
-                    ? `Your stake of $${leg.bet.stake} has been refunded`
-                    : "Your bet did not win this time",
-            },
-          });
-        }
-
-        settledCount++;
-      }
-
-      return res.json({ message: "Event settled", settled: settledCount });
+      const settled = await settleEvent(eventId, result);
+      return res.json({ message: "Event settled", settled });
     } catch (error) {
       res.status(500).json({ message: "Settlement failed" });
     }

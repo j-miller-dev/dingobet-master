@@ -23,28 +23,32 @@ export default function EventCard({ event }: { event: SportEvent }) {
     );
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
-      <p className="mb-2 text-xs font-medium text-orange-600">
-        {event.sport.title}
-      </p>
-      <div className="flex items-center justify-between gap-4">
-        <span className="flex-1 text-right font-semibold text-gray-900">
+    <div className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm">
+      {/* Date + league */}
+      <div className="mb-3 flex items-center justify-between">
+        <span className="text-xs font-semibold text-orange-500">{event.sport.title}</span>
+        <span className="text-xs text-gray-400">{formatTime(event.commenceTime)}</span>
+      </div>
+
+      {/* Teams */}
+      <div className="flex items-center justify-between gap-3">
+        <span className="flex-1 text-right text-sm font-bold text-gray-900 leading-tight">
           {event.homeTeam.name}
         </span>
-        <span className="shrink-0 rounded bg-gray-100 px-2 py-1 text-xs font-bold text-gray-500">
+        <span className="shrink-0 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-400">
           VS
         </span>
-        <span className="flex-1 text-left font-semibold text-gray-900">
+        <span className="flex-1 text-left text-sm font-bold text-gray-900 leading-tight">
           {event.awayTeam.name}
         </span>
       </div>
-      <p className="mt-2 text-center text-xs text-gray-400">
-        {formatTime(event.commenceTime)}
-      </p>
+
+      {/* Odds buttons */}
       {odds && (
-        <div className="mt-3 flex gap-2">
+        <div className="mt-4 flex gap-2">
           {odds.outcomes.map((outcome) => (
             <button
+              key={outcome.name}
               onClick={() => {
                 if (isSelected(outcome.name)) {
                   removeSelection(event.id);
@@ -59,19 +63,15 @@ export default function EventCard({ event }: { event: SportEvent }) {
                   });
                 }
               }}
-              key={outcome.name}
-              className={`flex flex-1 flex-col items-center rounded-md px-2 py-2 text-xs transition-colors border ${
+              className={[
+                "flex flex-1 flex-col items-center rounded-lg border px-2 py-2.5 text-xs transition-colors",
                 isSelected(outcome.name)
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-gray-50 text-gray-900 hover:bg-orange-50 hover:text-orange-600 border-gray-200"
-              }`}
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-gray-200 bg-gray-50 text-gray-700 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600",
+              ].join(" ")}
             >
-              <span className="truncate w-full text-center">
-                {outcome.name}
-              </span>
-              <span className="font-bold mt-1">
-                {outcome.price.toFixed(2)}
-              </span>
+              <span className="w-full truncate text-center leading-tight">{outcome.name}</span>
+              <span className="mt-1 text-sm font-bold">{outcome.price.toFixed(2)}</span>
             </button>
           ))}
         </div>

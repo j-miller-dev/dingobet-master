@@ -2,6 +2,8 @@
 import { useBetSlipStore } from "@/store/betSlipStore";
 import { useState } from "react";
 import api from "@/lib/api";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import BetToast from "@/components/ui/BetToast";
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"];
 
@@ -10,6 +12,8 @@ const BetSlip = () => {
     useBetSlipStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const combinedOdds = selections.reduce((acc, s) => acc * s.price, 1);
   const potentialPayout = (combinedOdds * parseFloat(stake || "0")).toFixed(2);
@@ -28,6 +32,7 @@ const BetSlip = () => {
         })),
       });
       clear();
+      setShowSuccess(true);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to place your bet";
@@ -56,10 +61,20 @@ const BetSlip = () => {
     setStake(next);
   };
 
-  if (selections.length === 0) return null;
+  if (selections.length === 0) {
+    return <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />;
+  }
+  if (!isOpen) return null;
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-amber-400 p-4 flex flex-col">
-      <h2>My BetSlip</h2>
+    <>
+    <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />
+    <div className="fixed bottom-[68px] left-0 right-0 z-40 bg-amber-400 p-4 flex flex-col max-h-[calc(100dvh-68px)] overflow-y-auto">
+      <div className="flex items-center justify-between">
+        <h2>My BetSlip</h2>
+        <button onClick={() => setIsOpen(false)} aria-label="Close bet slip">
+          <XMarkIcon className="h-6 w-6" />
+        </button>
+      </div>
 
       <h3>selections</h3>
       <div className="mt-3 flex gap-2 flex-col">
@@ -103,6 +118,7 @@ const BetSlip = () => {
         {loading ? "Placing..." : "Place Bet"}
       </button>
     </div>
+    </>
   );
 };
 

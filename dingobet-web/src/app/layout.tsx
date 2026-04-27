@@ -18,14 +18,20 @@ export const metadata: Metadata = {
   description: "Sports betting platform",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${jakarta.variable} antialiased`}>
+    <html lang="en" className={jakarta.variable}>
+      <body className="antialiased">
         <Providers>
           <Navbar />
           <BetSlip />
