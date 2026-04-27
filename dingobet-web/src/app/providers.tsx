@@ -2,12 +2,14 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import SocketProvider from "@/components/SocketProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  // useState so each request gets its own QueryClient (Next.js best practice)
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <SocketProvider>{children}</SocketProvider>
+    </QueryClientProvider>
   );
 }

@@ -4,15 +4,15 @@ import { LayoutGroup, motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import {
   NewspaperIcon,
-  MagnifyingGlassIcon,
   TicketIcon,
+  HomeIcon,
   ChatBubbleLeftRightIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import {
   NewspaperIcon as NewspaperSolid,
-  MagnifyingGlassIcon as MagnifyingGlassSolid,
   TicketIcon as TicketSolid,
+  HomeIcon as HomeSolid,
   ChatBubbleLeftRightIcon as ChatSolid,
   UserCircleIcon as UserSolid,
 } from "@heroicons/react/24/solid";
@@ -20,11 +20,11 @@ import { Link } from "@/components/ui/link";
 import { useAuthStore } from "@/store/authStore";
 
 const TABS = [
-  { label: "Feed",    href: "/feed",    Icon: NewspaperIcon,              IconActive: NewspaperSolid      },
-  { label: "Search",  href: "/search",  Icon: MagnifyingGlassIcon,        IconActive: MagnifyingGlassSolid },
-  { label: "Betting", href: "/",        Icon: TicketIcon,                 IconActive: TicketSolid          },
-  { label: "Chatter", href: "/chatter", Icon: ChatBubbleLeftRightIcon,    IconActive: ChatSolid            },
-  { label: "Profile", href: "/profile", Icon: UserCircleIcon,             IconActive: UserSolid            },
+  { label: "Feed",    href: "/feed",    Icon: NewspaperIcon,           IconActive: NewspaperSolid },
+  { label: "My Bets", href: "/bets",    Icon: TicketIcon,              IconActive: TicketSolid    },
+  { label: "Home",    href: "/",        Icon: HomeIcon,                IconActive: HomeSolid      },
+  { label: "Chatter", href: "/chatter", Icon: ChatBubbleLeftRightIcon, IconActive: ChatSolid      },
+  { label: "Profile", href: "/profile", Icon: UserCircleIcon,          IconActive: UserSolid      },
 ];
 
 const HIDE_ON = ["/login", "/register"];

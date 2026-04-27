@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import api from "@/lib/api";
+import { getSocket } from "@/lib/socket";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface BetLeg {
   id: string;
@@ -22,12 +27,20 @@ interface Bet {
   legs: BetLeg[];
 }
 
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+type Filter = "ALL" | "PENDING" | "WON" | "LOST" | "VOID";
+
+const FILTERS: Filter[] = ["ALL", "PENDING", "WON", "LOST", "VOID"];
+
 const STATUS_STYLES: Record<string, string> = {
   PENDING: "bg-gray-100 text-gray-600",
-  WON: "bg-green-100 text-green-700",
-  LOST: "bg-red-100 text-red-700",
-  VOID: "bg-yellow-100 text-yellow-700",
+  WON:     "bg-green-100 text-green-700",
+  LOST:    "bg-red-100 text-red-700",
+  VOID:    "bg-yellow-100 text-yellow-700",
 };
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString("en-AU", {
@@ -39,89 +52,139 @@ function formatDate(iso: string) {
   });
 }
 
-const MyBets = () => {
-  const [bets, setBets] = useState<Bet[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+async function fetchBets(): Promise<Bet[]> {
+  const { data } = await api.get("/bets");
+  return data;
+}
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
+export default function MyBetsPage() {
+  const queryClient = useQueryClient();
+  const [filter, setFilter] = useState<Filter>("ALL");
+
+  const { data: bets = [], isLoading, isError } = useQuery({
+    queryKey: ["bets"],
+    queryFn: fetchBets,
+  });
+
+  // Invalidate bets list when a bet settles via socket
   useEffect(() => {
-    api
-      .get("/bets")
-      .then((res) => setBets(res.data))
-      .catch(() => setError("Failed to load bets"))
-      .finally(() => setLoading(false));
-  }, []);
+    const socket = getSocket();
+    if (!socket.connected) return;
 
-  if (loading) return <div className="p-6 text-gray-500">Loading...</div>;
-  if (error) return <div className="p-6 text-red-600">{error}</div>;
-  if (bets.length === 0)
-    return <div className="p-6 text-gray-500">No bets placed yet.</div>;
+    const handler = () => {
+      queryClient.invalidateQueries({ queryKey: ["bets"] });
+    };
+
+    socket.on("bet:settled", handler);
+    return () => { socket.off("bet:settled", handler); };
+  }, [queryClient]);
+
+  const filtered = filter === "ALL" ? bets : bets.filter((b) => b.status === filter);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4 p-6">
-      <h1 className="text-2xl font-bold text-gray-900">My Bets</h1>
-      {bets.map((bet) => (
+    <div className="min-h-screen bg-orange-50/40 pb-24">
+      {/* ── Filter pill bar ── */}
+      <div className="sticky top-0 z-30 border-b border-gray-200 bg-white">
         <div
-          key={bet.id}
-          className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+          className="flex gap-2 overflow-x-auto px-3 py-3 scrollbar-hide"
+          style={{ scrollbarWidth: "none" }}
         >
-          {/* Header row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-600">
-                {bet.type}
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={[
+                "shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors capitalize",
+                filter === f
+                  ? "bg-orange-500 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200",
+              ].join(" ")}
+            >
+              {f === "ALL" ? "All" : f.charAt(0) + f.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Content ── */}
+      <div className="space-y-3 px-3 pt-4">
+        {isLoading && (
+          <p className="py-12 text-center text-sm text-gray-400">Loading…</p>
+        )}
+
+        {isError && (
+          <p className="py-12 text-center text-sm text-red-500">Failed to load bets.</p>
+        )}
+
+        {!isLoading && !isError && filtered.length === 0 && (
+          <p className="py-12 text-center text-sm text-gray-400">
+            {filter === "ALL" ? "No bets placed yet." : `No ${filter.toLowerCase()} bets.`}
+          </p>
+        )}
+
+        {filtered.map((bet) => (
+          <div
+            key={bet.id}
+            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="rounded-md bg-gray-100 px-2 py-0.5 text-xs font-bold text-gray-500">
+                  {bet.type}
+                </span>
+                <span
+                  className={`rounded-md px-2 py-0.5 text-xs font-bold ${STATUS_STYLES[bet.status] ?? STATUS_STYLES.PENDING}`}
+                >
+                  {bet.status}
+                </span>
+              </div>
+              <span className="text-xs text-gray-400">{formatDate(bet.placedAt)}</span>
+            </div>
+
+            {/* Legs */}
+            <div className="mt-3 space-y-1.5">
+              {bet.legs.map((leg) => (
+                <div
+                  key={leg.id}
+                  className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2"
+                >
+                  <span className="text-sm font-semibold text-gray-900">{leg.selection}</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xs uppercase text-gray-400">{leg.market}</span>
+                    <span className="text-sm font-bold text-gray-900">{leg.odds}</span>
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[leg.status] ?? STATUS_STYLES.PENDING}`}
+                    >
+                      {leg.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+              <span className="text-xs text-gray-500">
+                Stake <span className="font-semibold text-gray-900">${bet.stake}</span>
               </span>
-              <span
-                className={`rounded px-2 py-0.5 text-xs font-bold ${STATUS_STYLES[bet.status] ?? STATUS_STYLES.PENDING}`}
-              >
-                {bet.status}
+              <span className="text-xs text-gray-500">
+                Odds <span className="font-semibold text-gray-900">{bet.totalOdds}x</span>
+              </span>
+              <span className="text-xs text-gray-500">
+                {bet.status === "WON" ? "Won" : "Potential"}{" "}
+                <span
+                  className={`font-semibold ${bet.status === "WON" ? "text-green-600" : "text-gray-900"}`}
+                >
+                  ${bet.potentialPayout}
+                </span>
               </span>
             </div>
-            <span className="text-xs text-gray-400">{formatDate(bet.placedAt)}</span>
           </div>
-
-          {/* Legs */}
-          <div className="mt-3 space-y-1">
-            {bet.legs.map((leg) => (
-              <div
-                key={leg.id}
-                className="flex items-center justify-between rounded bg-gray-50 px-3 py-2 text-sm"
-              >
-                <span className="font-medium text-gray-900">{leg.selection}</span>
-                <div className="flex items-center gap-3 text-gray-500">
-                  <span className="uppercase text-xs">{leg.market}</span>
-                  <span className="font-bold text-gray-900">{leg.odds}</span>
-                  <span
-                    className={`rounded px-1.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[leg.status] ?? STATUS_STYLES.PENDING}`}
-                  >
-                    {leg.status}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Footer: stake / odds / payout */}
-          <div className="mt-3 flex justify-between border-t border-gray-100 pt-3 text-sm">
-            <span className="text-gray-500">
-              Stake: <span className="font-semibold text-gray-900">${bet.stake}</span>
-            </span>
-            <span className="text-gray-500">
-              Odds: <span className="font-semibold text-gray-900">{bet.totalOdds}</span>
-            </span>
-            <span className="text-gray-500">
-              Payout:{" "}
-              <span
-                className={`font-semibold ${bet.status === "WON" ? "text-green-600" : "text-gray-900"}`}
-              >
-                ${bet.potentialPayout}
-              </span>
-            </span>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
-};
-
-export default MyBets;
+}

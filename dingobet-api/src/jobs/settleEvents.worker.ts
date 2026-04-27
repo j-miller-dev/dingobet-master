@@ -49,8 +49,13 @@ export const settlementWorker = new Worker(
       let scores: any[];
       try {
         scores = await fetchScores(sport.id);
-      } catch (err) {
-        // One sport failing (e.g. Odds API quota) shouldn't abort the whole run.
+      } catch (err: any) {
+        // 401 means the API key is invalid or quota is exhausted — no point
+        // trying remaining sports, they will all fail the same way.
+        if (err?.message?.includes("401")) {
+          console.warn("[settlement] Odds API returned 401 — quota exhausted or invalid key, skipping run");
+          return;
+        }
         console.warn(`[settlement] fetchScores failed for ${sport.id}:`, err);
         continue;
       }

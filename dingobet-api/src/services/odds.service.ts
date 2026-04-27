@@ -28,7 +28,7 @@ export const fetchScores = async (sportKey: string): Promise<any[]> => {
 export const fetchEvents = async (sportKey: string): Promise<any[]> => {
   try {
     const response = await fetch(
-      `${process.env.ODDS_API_BASE_URL}/sports/${sportKey}/odds?apiKey=${process.env.ODDS_API_KEY}&regions=au&markets=h2h`,
+      `${process.env.ODDS_API_BASE_URL}/sports/${sportKey}/odds?apiKey=${process.env.ODDS_API_KEY}&regions=au&markets=h2h,spreads,totals`,
     );
     if (!response.ok) {
       throw new Error("network response was not ok");

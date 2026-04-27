@@ -2,30 +2,26 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import { useWalletStore } from "@/store/walletStore";
+import { ArrowLeftIcon, BellIcon } from "@heroicons/react/24/outline";
 import api from "@/lib/api";
 
 const HIDDEN_ROUTES = ["/login", "/register"];
-const POLL_MS = 30_000; // refresh balance every 30 s
 
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, token } = useAuthStore();
-  const [balance, setBalance] = useState<number | null>(null);
+  const { user } = useAuthStore();
+  const balance = useWalletStore((s) => s.balance);
 
-  useEffect(() => {
-    if (!token) return;
-
-    const fetchBalance = () =>
-      api.get("/wallet").then((r) => setBalance(Number(r.data.balance)));
-
-    fetchBalance();
-    const id = setInterval(fetchBalance, POLL_MS);
-    return () => clearInterval(id);
-  }, [token]);
+  const { data: notifData } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => api.get("/notifications").then((r) => r.data),
+    enabled: !!user,
+  });
+  const unreadCount: number = notifData?.unreadCount ?? 0;
 
   if (HIDDEN_ROUTES.includes(pathname)) return null;
 
@@ -60,12 +56,25 @@ export default function Navbar() {
         </div>
 
         {user && (
-          <Link
-            href="/wallet"
-            className="rounded-full bg-orange-50 px-4 py-1.5 text-sm font-semibold text-orange-600 ring-1 ring-orange-200 transition-colors hover:bg-orange-100"
-          >
-            {balance === null ? "···" : `$${balance.toFixed(2)}`}
-          </Link>
+          <div className="flex items-center gap-3">
+            {/* Bell */}
+            <Link href="/notifications" className="relative">
+              <BellIcon className="h-6 w-6 text-gray-500" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Wallet balance */}
+            <Link
+              href="/wallet"
+              className="rounded-full bg-orange-50 px-4 py-1.5 text-sm font-semibold text-orange-600 ring-1 ring-orange-200 transition-colors hover:bg-orange-100"
+            >
+              {balance === null ? "···" : `$${balance.toFixed(2)}`}
+            </Link>
+          </div>
         )}
       </div>
     </nav>

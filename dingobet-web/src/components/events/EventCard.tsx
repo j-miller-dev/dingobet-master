@@ -1,8 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
+import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 import type { SportEvent } from "@/hooks/useEvents";
 import { useOdds } from "@/hooks/useOdds";
 import { useBetSlipStore } from "@/store/betSlipStore";
+import { getSocket } from "@/lib/socket";
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleString("en-AU", {
@@ -15,8 +19,28 @@ function formatTime(iso: string) {
 }
 
 export default function EventCard({ event }: { event: SportEvent }) {
+  const queryClient = useQueryClient();
   const { data: odds } = useOdds(event.id);
   const { selections, addSelection, removeSelection } = useBetSlipStore();
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (!socket.connected) return;
+
+    socket.emit("subscribe:event", event.id);
+
+    const handleOddsUpdated = (data: { eventId: string }) => {
+      if (data.eventId === event.id) {
+        queryClient.invalidateQueries({ queryKey: ["odds", event.id] });
+      }
+    };
+
+    socket.on("odds:updated", handleOddsUpdated);
+
+    return () => {
+      socket.off("odds:updated", handleOddsUpdated);
+    };
+  }, [event.id, queryClient]);
   const isSelected = (outcomeName: string) =>
     selections.some(
       (s) => s.eventId === event.id && s.selection === outcomeName,
@@ -24,24 +48,27 @@ export default function EventCard({ event }: { event: SportEvent }) {
 
   return (
     <div className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm">
-      {/* Date + league */}
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-xs font-semibold text-orange-500">{event.sport.title}</span>
-        <span className="text-xs text-gray-400">{formatTime(event.commenceTime)}</span>
-      </div>
+      {/* Tapping the header/teams navigates to the event detail page */}
+      <Link href={`/event/${event.id}`} className="block">
+        {/* Date + league */}
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-semibold text-orange-500">{event.sport.title}</span>
+          <span className="text-xs text-gray-400">{formatTime(event.commenceTime)}</span>
+        </div>
 
-      {/* Teams */}
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex-1 text-right text-sm font-bold text-gray-900 leading-tight">
-          {event.homeTeam.name}
-        </span>
-        <span className="shrink-0 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-400">
-          VS
-        </span>
-        <span className="flex-1 text-left text-sm font-bold text-gray-900 leading-tight">
-          {event.awayTeam.name}
-        </span>
-      </div>
+        {/* Teams */}
+        <div className="flex items-center justify-between gap-3">
+          <span className="flex-1 text-right text-sm font-bold text-gray-900 leading-tight">
+            {event.homeTeam.name}
+          </span>
+          <span className="shrink-0 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-400">
+            VS
+          </span>
+          <span className="flex-1 text-left text-sm font-bold text-gray-900 leading-tight">
+            {event.awayTeam.name}
+          </span>
+        </div>
+      </Link>
 
       {/* Odds buttons */}
       {odds && (
