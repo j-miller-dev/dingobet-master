@@ -15,6 +15,8 @@ interface BetSlipSelection {
 interface BetSlipState {
   selections: BetSlipSelection[];
   stake: string;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
   addSelection: (s: BetSlipSelection) => void;
   removeSelection: (eventId: string) => void;
   setStake: (stake: string) => void;
@@ -24,16 +26,17 @@ interface BetSlipState {
 export const useBetSlipStore = create<BetSlipState>((set) => ({
   selections: [],
   stake: "",
+  isOpen: false,
+  setIsOpen: (open) => set({ isOpen: open }),
   addSelection: (s) =>
     set((state) => {
-      // replace if same event already added (can't have same event twice)
       const filtered = state.selections.filter((x) => x.eventId !== s.eventId);
-      return { selections: [...filtered, s] };
+      return { selections: [...filtered, s], isOpen: true };
     }),
   removeSelection: (eventId) =>
     set((state) => ({
       selections: state.selections.filter((x) => x.eventId !== eventId),
     })),
   setStake: (stake) => set({ stake }),
-  clear: () => set({ selections: [], stake: "" }),
+  clear: () => set({ selections: [], stake: "", isOpen: false }),
 }));

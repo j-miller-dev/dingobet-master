@@ -3,14 +3,12 @@
 import { LayoutGroup, motion } from "motion/react";
 import { usePathname } from "next/navigation";
 import {
-  NewspaperIcon,
   TicketIcon,
   HomeIcon,
   ChatBubbleLeftRightIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import {
-  NewspaperIcon as NewspaperSolid,
   TicketIcon as TicketSolid,
   HomeIcon as HomeSolid,
   ChatBubbleLeftRightIcon as ChatSolid,
@@ -18,9 +16,9 @@ import {
 } from "@heroicons/react/24/solid";
 import { Link } from "@/components/ui/link";
 import { useAuthStore } from "@/store/authStore";
+import { useBetSlipStore } from "@/store/betSlipStore";
 
 const TABS = [
-  { label: "Feed",    href: "/feed",    Icon: NewspaperIcon,           IconActive: NewspaperSolid },
   { label: "My Bets", href: "/bets",    Icon: TicketIcon,              IconActive: TicketSolid    },
   { label: "Home",    href: "/",        Icon: HomeIcon,                IconActive: HomeSolid      },
   { label: "Chatter", href: "/chatter", Icon: ChatBubbleLeftRightIcon, IconActive: ChatSolid      },
@@ -32,6 +30,8 @@ const HIDE_ON = ["/login", "/register"];
 export default function BottomNav() {
   const pathname = usePathname();
   const token = useAuthStore((s) => s.token);
+  const { selections, isOpen, setIsOpen } = useBetSlipStore();
+  const selectionCount = selections.length;
 
   if (!token || HIDE_ON.includes(pathname)) return null;
 
@@ -42,6 +42,27 @@ export default function BottomNav() {
     >
       <LayoutGroup id="bottom-nav">
         <div className="flex">
+          {/* BetSlip button */}
+          <span className="relative flex flex-1">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={[
+                "flex flex-1 flex-col items-center gap-1 py-3 text-xs font-bold transition-colors duration-150 focus:outline-none",
+                isOpen ? "text-orange-500" : "text-zinc-400",
+              ].join(" ")}
+            >
+              <span className="relative">
+                <TicketSolid className={`h-6 w-6 ${isOpen ? "text-orange-500" : "text-zinc-400"}`} />
+                {selectionCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                    {selectionCount}
+                  </span>
+                )}
+              </span>
+              <span>Slip</span>
+            </button>
+          </span>
+
           {TABS.map(({ label, href, Icon, IconActive }) => {
             const current =
               href === "/" ? pathname === "/" : pathname.startsWith(href);
