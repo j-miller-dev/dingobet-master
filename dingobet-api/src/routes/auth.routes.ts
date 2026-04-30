@@ -205,8 +205,23 @@ router.post("/refresh", async (req: Request, res: Response) => {
       },
     );
 
-    // 5. Return { accessToken }
-    res.json({ accessToken });
+    // Rotate: delete old session, issue a new refresh token
+    const newRefreshToken = crypto.randomUUID();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await prisma.session.delete({ where: { id: session.id } });
+    await prisma.session.create({
+      data: {
+        userId: user.id,
+        refreshToken: newRefreshToken,
+        userAgent: req.headers["user-agent"] ?? null,
+        ipAddress: req.ip ?? null,
+        expiresAt,
+      },
+    });
+
+    res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

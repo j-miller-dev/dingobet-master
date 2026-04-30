@@ -18,7 +18,7 @@ export default function LoginPage() {
     mutationFn: (credentials: { email: string; password: string }) =>
       api.post("/auth/login", credentials).then((res) => res.data),
     onSuccess: (data) => {
-      setAuth(data.accessToken, data.user);
+      setAuth(data.accessToken, data.refreshToken, data.user);
       router.push("/");
     },
   });

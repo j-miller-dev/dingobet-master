@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import api from "@/lib/api";
-import { useAuthStore } from "@/store/authStore";
-
 export default function RegisterPage() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
 
   const [form, setForm] = useState({
     email: "",
@@ -25,9 +22,8 @@ export default function RegisterPage() {
   } = useMutation({
     mutationFn: (data: typeof form) =>
       api.post("/auth/register", data).then((res) => res.data),
-    onSuccess: (data) => {
-      setAuth(data.accessToken, data.user);
-      router.push("/");
+    onSuccess: () => {
+      router.push("/login");
     },
   });
 
