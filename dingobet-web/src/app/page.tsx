@@ -37,6 +37,7 @@ type Tab = "sports" | "racing";
 
 export default function Home() {
   const token = useAuthStore((s) => s.token);
+  const hydrated = useAuthStore((s) => s._hydrated);
   const router = useRouter();
   const { data: sports = [], isLoading } = useSports();
   const [tab, setTab] = useState<Tab>("sports");
@@ -54,6 +55,7 @@ export default function Home() {
   const racingGroups = groups.filter((g) => RACING_GROUPS.includes(g));
   const activeGroups = tab === "sports" ? sportsGroups : racingGroups;
 
+  if (!hydrated) return null;
   if (!token) return <LandingPage />;
 
   return (

@@ -5,12 +5,16 @@ import { useAuthStore } from "@/store/authStore";
 export function useRequireAuth() {
   const router = useRouter();
   const token = useAuthStore((state) => state.token);
+  const hydrated = useAuthStore((state) => state._hydrated);
 
   useEffect(() => {
-    if (!token) {
+    // Wait until the store has rehydrated from localStorage before deciding
+    // whether to redirect — prevents a flash of protected content or an
+    // incorrect redirect when the user is actually logged in.
+    if (hydrated && !token) {
       router.push("/login");
     }
-  }, [token, router]);
+  }, [hydrated, token, router]);
 
-  return token;
+  return { token, hydrated };
 }
