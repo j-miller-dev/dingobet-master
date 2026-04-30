@@ -214,15 +214,20 @@ export default function EventDetailPage() {
                         : "border-gray-200 bg-gray-50 text-gray-700 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600",
                     ].join(" ")}
                   >
-                    {outcome.point !== undefined && (
-                      <span className="text-[10px] opacity-70 mb-0.5">
-                        {outcome.point > 0 ? `+${outcome.point}` : outcome.point}
-                      </span>
-                    )}
                     <span className="w-full truncate text-center font-medium leading-tight">
                       {outcome.name}
                     </span>
-                    <span className="mt-1.5 text-sm font-bold">{outcome.price.toFixed(2)}</span>
+                    {outcome.point !== undefined && (
+                      <span className="mt-1 text-sm font-bold">
+                        {outcome.point > 0 ? `+${outcome.point}` : outcome.point}
+                      </span>
+                    )}
+                    <span className={[
+                      "text-sm font-bold",
+                      outcome.point !== undefined ? "mt-0.5 opacity-70 text-xs" : "mt-1.5",
+                    ].join(" ")}>
+                      {outcome.price.toFixed(2)}
+                    </span>
                   </button>
                 );
               })}

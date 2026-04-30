@@ -99,7 +99,17 @@ export default function EventCard({ event, market }: { event: SportEvent; market
               ].join(" ")}
             >
               <span className="w-full truncate text-center leading-tight">{outcome.name}</span>
-              <span className="mt-1 text-sm font-bold">{outcome.price.toFixed(2)}</span>
+              {outcome.point !== undefined && (
+                <span className="mt-1 text-sm font-bold">
+                  {outcome.point > 0 ? `+${outcome.point}` : outcome.point}
+                </span>
+              )}
+              <span className={[
+                "text-sm font-bold",
+                outcome.point !== undefined ? "mt-0.5 opacity-70 text-xs" : "mt-1",
+              ].join(" ")}>
+                {outcome.price.toFixed(2)}
+              </span>
             </button>
           ))}
         </div>
