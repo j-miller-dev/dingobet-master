@@ -60,11 +60,9 @@ router.post(
           orderBy: { fetchedAt: "desc" },
         });
         if (!snapshot)
-          return res
-            .status(404)
-            .json({
-              message: `Odds not available for event ${legInput.eventId}`,
-            });
+          return res.status(404).json({
+            message: `Odds not available for event ${legInput.eventId}`,
+          });
         // 2c. Each snapshot has an `outcomes` JSON array, e.g.:
         // [{ name: "Melbourne Victory", price: 2.5 }, { name: "Sydney FC", price 1.8 }]
         // Find the outcome matching the user's selection to get its price (decimal odds).
@@ -178,9 +176,16 @@ router.post(
 router.get("/", authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
+    const { status } = req.query;
     const bets = await prisma.bet.findMany({
-      where: { userId },
-      include: { legs: true },
+      where: { userId, ...(status ? { status: status as "PENDING" | "WON" | "LOST" | "VOID" | "CASHED_OUT" | "PARTIALLY_SETTLED" } : {}) },
+      include: {
+        legs: {
+          include: {
+            event: { include: { homeTeam: true, awayTeam: true, sport: true } },
+          },
+        },
+      },
       orderBy: { placedAt: "desc" },
     });
     res.json(bets);

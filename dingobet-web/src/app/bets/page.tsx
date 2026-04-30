@@ -8,12 +8,20 @@ import { getSocket } from "@/lib/socket";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface BetEvent {
+  homeTeam: { name: string };
+  awayTeam: { name: string };
+  sport: { title: string };
+}
+
 interface BetLeg {
   id: string;
   selection: string;
   market: string;
   odds: string;
+  line: string | null;
   status: string;
+  event: BetEvent;
 }
 
 interface Bet {
@@ -146,23 +154,39 @@ export default function MyBetsPage() {
 
             {/* Legs */}
             <div className="mt-3 space-y-1.5">
-              {bet.legs.map((leg) => (
-                <div
-                  key={leg.id}
-                  className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2"
-                >
-                  <span className="text-sm font-semibold text-gray-900">{leg.selection}</span>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-xs uppercase text-gray-400">{leg.market}</span>
-                    <span className="text-sm font-bold text-gray-900">{leg.odds}</span>
-                    <span
-                      className={`rounded px-1.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[leg.status] ?? STATUS_STYLES.PENDING}`}
-                    >
-                      {leg.status}
-                    </span>
+              {bet.legs.map((leg) => {
+                const matchup = `${leg.event.homeTeam.name} v ${leg.event.awayTeam.name}`;
+                const isTotals = leg.market === "totals";
+                const isSpreads = leg.market === "spreads";
+                const selectionLine = isTotals
+                  ? `${leg.selection}${leg.line ? ` ${leg.line}` : ""} — ${matchup}`
+                  : isSpreads
+                  ? `${leg.selection}${leg.line ? ` (${Number(leg.line) > 0 ? "+" : ""}${leg.line})` : ""} — ${matchup}`
+                  : leg.selection;
+
+                return (
+                  <div
+                    key={leg.id}
+                    className="rounded-lg bg-gray-50 px-3 py-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-gray-900">{selectionLine}</p>
+                        {leg.market === "h2h" && (
+                          <p className="mt-0.5 text-xs text-gray-400">{matchup}</p>
+                        )}
+                        <p className="mt-0.5 text-xs text-gray-400">{leg.event.sport.title}</p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <span className="text-sm font-bold text-gray-900">{leg.odds}</span>
+                        <span className={`rounded px-1.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[leg.status] ?? STATUS_STYLES.PENDING}`}>
+                          {leg.status}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Footer */}
