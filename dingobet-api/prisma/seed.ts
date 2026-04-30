@@ -2,6 +2,7 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { TEAMS_BY_SPORT } from "../src/data/teams.js";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
@@ -14,6 +15,7 @@ function daysFromNow(days: number, hour = 19, minute = 30): Date {
   d.setHours(hour, minute, 0, 0);
   return d;
 }
+
 
 function h2hOdds(homePrice: number, awayPrice: number, drawPrice?: number) {
   const outcomes: { name: string; price: number }[] = [
@@ -80,6 +82,16 @@ const SPORTS = [
 type EventRow = [string, string, string, number, number, number, number | null, number, number];
 
 const EVENTS: EventRow[] = [
+  // ── Already-started events (negative days = in the past) ──────────────────
+  // These are immediately eligible for fake settlement on server startup.
+  ["soccer_epl",                    "Nottingham Forest",  "Everton",          -1, 1.75, 4.50, 3.50, 1.5, 2.5],
+  ["basketball_nba",                "New York Knicks",    "Toronto Raptors",  -1, 1.60, 2.40, null, 6.5, 210.5],
+  ["rugbyleague_nrl",               "Wests Tigers",       "Canterbury Bulldogs", -1, 2.20, 1.72, null, 5.5, 39.5],
+  ["icehockey_nhl",                 "New York Rangers",   "Pittsburgh Penguins", -2, 1.75, 2.15, null, 1.5, 6.0],
+  ["aussierules_afl",               "Melbourne",          "St Kilda",         -2, 1.85, 2.00, null, 7.5, 153.5],
+  ["baseball_mlb",                  "Atlanta Braves",     "New York Mets",    -1, 1.90, 1.95, null, 1.5, 8.0],
+  ["cricket_ipl",                   "Punjab Kings",       "Sunrisers Hyderabad", -1, 2.00, 1.90, null, 8.5, 168.5],
+
   // EPL
   ["soccer_epl", "Arsenal",          "Chelsea",           2,  2.10, 3.50, 3.20, 1.5, 2.5],
   ["soccer_epl", "Manchester City",  "Liverpool",         4,  2.30, 3.10, 3.00, 0.5, 2.5],
@@ -225,7 +237,18 @@ async function main() {
   }
   console.log(`  Seeded ${SPORTS.length} sports`);
 
-  // ── 3. Events + teams + odds ──
+  // ── 3. Teams (bulk upsert all known teams across every league) ──
+  const allTeamNames = [...new Set(Object.values(TEAMS_BY_SPORT).flat())];
+  for (const name of allTeamNames) {
+    await prisma.team.upsert({
+      where: { name },
+      update: {},
+      create: { name },
+    });
+  }
+  console.log(`  Seeded ${allTeamNames.length} teams`);
+
+  // ── 4. Events + odds ──
   let eventCount = 0;
 
   for (const [sportId, homeName, awayName, days, homeOdds, awayOdds, drawOdds, spread, total] of EVENTS) {
@@ -245,7 +268,7 @@ async function main() {
 
     const event = await prisma.event.upsert({
       where: { externalId },
-      update: { commenceTime: daysFromNow(days), status: "UPCOMING" },
+      update: { commenceTime: daysFromNow(days), status: "UPCOMING", result: null },
       create: {
         externalId,
         sportId,
