@@ -35,9 +35,10 @@ const router: Router = Router();
 router.get("/:eventId", authenticate, async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
+    const market = req.query.market as string | undefined;
 
     const snapshot = await prisma.oddsSnapshot.findFirst({
-      where: { eventId },
+      where: { eventId, ...(market ? { market } : {}) },
       orderBy: { fetchedAt: "desc" },
     });
 

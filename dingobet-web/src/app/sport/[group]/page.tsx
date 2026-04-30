@@ -10,6 +10,17 @@ import type { SportEvent } from "@/hooks/useEvents";
 import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 
+// ─── Available markets ────────────────────────────────────────────────────────
+
+const MARKETS = [
+  { key: "h2h",     label: "Head to Head" },
+  { key: "spreads", label: "Handicap" },
+  { key: "totals",  label: "Totals" },
+];
+
+// Sports where spreads don't exist — hide that tab
+const NO_SPREADS = ["Tennis", "Cricket"];
+
 // ─── Default league per sport group ──────────────────────────────────────────
 // The league whose title matches this string will be selected on first load.
 // Falls back to the first league alphabetically if no match.
@@ -66,6 +77,11 @@ export default function SportGroupPage() {
 
   // undefined = not yet resolved, null = ALL, string = sport id
   const [selectedId, setSelectedId] = useState<string | null | undefined>(undefined);
+  const [selectedMarket, setSelectedMarket] = useState("h2h");
+
+  const availableMarkets = MARKETS.filter(
+    (m) => !(m.key === "spreads" && NO_SPREADS.includes(decodedGroup)),
+  );
 
   // Once leagues load, default to the top one
   useEffect(() => {
@@ -148,6 +164,24 @@ export default function SportGroupPage() {
         </div>
       </div>
 
+      {/* ── Market sub-header ── */}
+      <div className="flex gap-2 border-b border-gray-100 bg-white px-3 py-2">
+        {availableMarkets.map((m) => (
+          <button
+            key={m.key}
+            onClick={() => setSelectedMarket(m.key)}
+            className={[
+              "rounded-full px-3 py-1 text-xs font-semibold transition-colors",
+              selectedMarket === m.key
+                ? "bg-orange-500 text-white"
+                : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+            ].join(" ")}
+          >
+            {m.label}
+          </button>
+        ))}
+      </div>
+
       {/* ── Events list ── */}
       <div className="space-y-3 px-3 pt-4">
         {isLoading && (
@@ -161,7 +195,7 @@ export default function SportGroupPage() {
         )}
 
         {events.map((event) => (
-          <EventCard key={event.id} event={event} />
+          <EventCard key={event.id} event={event} market={selectedMarket} />
         ))}
       </div>
     </div>

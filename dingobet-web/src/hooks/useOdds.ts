@@ -16,14 +16,15 @@ export interface OddsSnapshot {
   fetchedAt: string;
 }
 
-async function fetchOdds(eventId: string): Promise<OddsSnapshot> {
-  const { data } = await api.get(`/odds/${eventId}`);
+async function fetchOdds(eventId: string, market?: string): Promise<OddsSnapshot> {
+  const params = market ? `?market=${market}` : "";
+  const { data } = await api.get(`/odds/${eventId}${params}`);
   return data;
 }
 
-export function useOdds(eventId: string) {
+export function useOdds(eventId: string, market?: string) {
   return useQuery({
-    queryKey: ["odds", eventId],
-    queryFn: () => fetchOdds(eventId),
+    queryKey: ["odds", eventId, market ?? "default"],
+    queryFn: () => fetchOdds(eventId, market),
   });
 }

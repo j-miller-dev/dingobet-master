@@ -18,9 +18,9 @@ function formatTime(iso: string) {
   });
 }
 
-export default function EventCard({ event }: { event: SportEvent }) {
+export default function EventCard({ event, market }: { event: SportEvent; market?: string }) {
   const queryClient = useQueryClient();
-  const { data: odds } = useOdds(event.id);
+  const { data: odds } = useOdds(event.id, market);
   const { selections, addSelection, removeSelection } = useBetSlipStore();
 
   useEffect(() => {
@@ -34,6 +34,7 @@ export default function EventCard({ event }: { event: SportEvent }) {
         queryClient.invalidateQueries({ queryKey: ["odds", event.id] });
       }
     };
+
 
     socket.on("odds:updated", handleOddsUpdated);
 
