@@ -79,6 +79,16 @@ export default function SportGroupPage() {
   const [selectedId, setSelectedId] = useState<string | null | undefined>(undefined);
   const [selectedMarket, setSelectedMarket] = useState("h2h");
 
+  // Reset state synchronously during render when the sport group changes.
+  // This prevents stale events from a previous group painting for one frame
+  // before a useEffect could clear them.
+  const [prevGroup, setPrevGroup] = useState(decodedGroup);
+  if (prevGroup !== decodedGroup) {
+    setPrevGroup(decodedGroup);
+    setSelectedId(undefined);
+    setSelectedMarket("h2h");
+  }
+
   const availableMarkets = MARKETS.filter(
     (m) => !(m.key === "spreads" && NO_SPREADS.includes(decodedGroup)),
   );
