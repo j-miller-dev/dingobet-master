@@ -4,6 +4,12 @@ import { useBetSlipStore } from "@/store/betSlipStore";
 import { useState, useRef } from "react";
 import api from "@/lib/api";
 import { XMarkIcon, TicketIcon } from "@heroicons/react/24/outline";
+
+const MARKET_LABELS: Record<string, string> = {
+  h2h:     "Head to Head",
+  spreads: "Handicap",
+  totals:  "Totals",
+};
 import BetToast from "@/components/ui/BetToast";
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"];
@@ -166,8 +172,13 @@ const BetSlip = () => {
               className="flex items-center justify-between rounded-xl bg-orange-50 px-3 py-2.5"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-gray-900">{s.label}</p>
-                <p className="text-xs text-gray-400 uppercase">{s.market}</p>
+                <p className="truncate text-sm font-semibold text-gray-900">
+                  {s.label}{s.point !== undefined ? ` ${s.point > 0 ? "+" : ""}${s.point}` : ""}
+                </p>
+                <p className="truncate text-xs text-gray-400">{s.eventLabel}</p>
+                <p className="text-xs text-gray-400">
+                  {MARKET_LABELS[s.market] ?? s.market}
+                </p>
                 {mode === "singles" && stakeNum > 0 && (
                   <p className="text-xs font-semibold text-green-600 mt-0.5">
                     Returns ${(stakeNum * s.price).toFixed(2)}

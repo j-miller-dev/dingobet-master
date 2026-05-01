@@ -87,7 +87,11 @@ export default function EventCard({ event, market }: { event: SportEvent; market
                     market: odds.market,
                     selection: outcome.name,
                     price: outcome.price,
-                    label: outcome.name,
+                    point: outcome.point,
+                    label: outcome.name === "home" ? event.homeTeam.name
+                         : outcome.name === "away" ? event.awayTeam.name
+                         : outcome.name,
+                    eventLabel: `${event.homeTeam.name} v ${event.awayTeam.name}`,
                   });
                 }
               }}

@@ -9,7 +9,9 @@ interface BetSlipSelection {
   market: string;
   selection: string;
   price: number;
-  label: string; // e.g. "Melbourne Victory vs Sydney FC"
+  label: string;       // resolved team/outcome name e.g. "Boston Bruins"
+  eventLabel: string;  // matchup e.g. "Toronto Maple Leafs v Boston Bruins"
+  point?: number;      // handicap/total line e.g. -1.5
 }
 
 interface BetSlipState {
