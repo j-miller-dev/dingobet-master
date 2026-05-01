@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { validate } from "../middleware/validate.middleware.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { loginSchema, registerSchema } from "../schemas/auth.schemas.js";
 import rateLimit from "express-rate-limit";
@@ -222,6 +223,56 @@ router.post("/refresh", async (req: Request, res: Response) => {
     });
 
     res.json({ accessToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
+ * CHANGE PASSWORD ROUTE
+ * PATCH /api/auth/change-password
+ * Requires auth + current password verification
+ */
+router.patch("/change-password", authenticate, async (req: Request, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword)
+      return res.status(400).json({ message: "Current and new password required" });
+    if (newPassword.length < 8)
+      return res.status(400).json({ message: "New password must be at least 8 characters" });
+
+    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const match = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!match) return res.status(400).json({ message: "Current password is incorrect" });
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: user.id }, data: { passwordHash: hash } });
+
+    res.json({ message: "Password updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+/**
+ * RESET PASSWORD ROUTE
+ * PATCH /api/auth/reset-password
+ * Authenticated — skips current password (simulates clicking a reset link)
+ */
+router.patch("/reset-password", authenticate, async (req: Request, res: Response) => {
+  try {
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 8)
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({ where: { id: req.user!.id }, data: { passwordHash: hash } });
+
+    res.json({ message: "Password reset" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
