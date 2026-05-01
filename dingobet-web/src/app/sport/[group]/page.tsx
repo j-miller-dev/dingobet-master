@@ -6,6 +6,7 @@ import { useSports } from "@/hooks/useSports";
 import { useEvents } from "@/hooks/useEvents";
 import { useRequireAuth } from "@/hooks/useRequireAuth";
 import EventCard from "@/components/events/EventCard";
+import { SkeletonEventCard, ErrorState } from "@/components/ui/Skeleton";
 import type { SportEvent } from "@/hooks/useEvents";
 import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
@@ -194,19 +195,17 @@ export default function SportGroupPage() {
 
       {/* ── Events list ── */}
       <div className="space-y-3 px-3 pt-4">
-        {isLoading && (
-          <p className="py-12 text-center text-sm text-gray-400">Loading…</p>
-        )}
-
-        {!isLoading && events.length === 0 && (
+        {!isReady || isLoading ? (
+          [0, 1, 2, 3].map((i) => <SkeletonEventCard key={i} />)
+        ) : events.length === 0 ? (
           <p className="py-12 text-center text-sm text-gray-400">
             No upcoming events for {selectedLeague?.title ?? decodedGroup}.
           </p>
+        ) : (
+          events.map((event) => (
+            <EventCard key={event.id} event={event} market={selectedMarket} />
+          ))
         )}
-
-        {events.map((event) => (
-          <EventCard key={event.id} event={event} market={selectedMarket} />
-        ))}
       </div>
     </div>
   );

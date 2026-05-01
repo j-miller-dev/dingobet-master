@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/lib/api";
 import { getSocket } from "@/lib/socket";
+import { SkeletonBetCard, ErrorState } from "@/components/ui/Skeleton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -118,13 +119,9 @@ export default function MyBetsPage() {
 
       {/* ── Content ── */}
       <div className="space-y-3 px-3 pt-4">
-        {isLoading && (
-          <p className="py-12 text-center text-sm text-gray-400">Loading…</p>
-        )}
+        {isLoading && [0, 1, 2].map((i) => <SkeletonBetCard key={i} />)}
 
-        {isError && (
-          <p className="py-12 text-center text-sm text-red-500">Failed to load bets.</p>
-        )}
+        {isError && <ErrorState message="Failed to load bets." onRetry={() => queryClient.invalidateQueries({ queryKey: ["bets"] })} />}
 
         {!isLoading && !isError && filtered.length === 0 && (
           <p className="py-12 text-center text-sm text-gray-400">

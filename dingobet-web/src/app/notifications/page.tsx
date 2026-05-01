@@ -11,6 +11,7 @@ import {
   XCircleIcon,
   BellIcon,
 } from "@heroicons/react/24/outline";
+import { SkeletonNotification, ErrorState } from "@/components/ui/Skeleton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -70,7 +71,7 @@ async function fetchNotifications(): Promise<NotificationsResponse> {
 export default function NotificationsPage() {
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["notifications"],
     queryFn: fetchNotifications,
   });
@@ -107,11 +108,10 @@ export default function NotificationsPage() {
 
       {/* ── List ── */}
       <div className="divide-y divide-gray-100">
-        {isLoading && (
-          <p className="py-12 text-center text-sm text-gray-400">Loading…</p>
-        )}
+        {isLoading && [0, 1, 2, 3].map((i) => <SkeletonNotification key={i} />)}
+        {isError && <ErrorState message="Failed to load notifications." />}
 
-        {!isLoading && notifications.length === 0 && (
+        {!isLoading && !isError && notifications.length === 0 && (
           <div className="flex flex-col items-center py-16 gap-3">
             <BellIcon className="h-10 w-10 text-gray-300" />
             <p className="text-sm text-gray-400">No notifications yet.</p>

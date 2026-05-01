@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useBetSlipStore } from "@/store/betSlipStore";
 import { getSocket } from "@/lib/socket";
 import api from "@/lib/api";
+import { Skeleton, ErrorState } from "@/components/ui/Skeleton";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -123,11 +124,43 @@ export default function EventDetailPage() {
     selections.some((s) => s.eventId === id && s.market === market && s.selection === outcomeName);
 
   if (isLoading) {
-    return <p className="py-12 text-center text-sm text-gray-400">Loading…</p>;
+    return (
+      <div className="min-h-screen bg-orange-50/40 pb-24">
+        {/* Header skeleton */}
+        <div className="bg-white px-4 py-5 border-b border-gray-200">
+          <Skeleton className="mb-3 h-3 w-16" />
+          <div className="flex items-center justify-between gap-4">
+            <Skeleton className="h-5 flex-1" />
+            <Skeleton className="h-8 w-12 rounded-lg" />
+            <Skeleton className="h-5 flex-1" />
+          </div>
+          <Skeleton className="mx-auto mt-3 h-3 w-40" />
+        </div>
+        {/* Market tabs skeleton */}
+        <div className="border-b border-gray-200 bg-white px-3 py-3">
+          <div className="flex gap-2">
+            {[0, 1, 2].map((i) => <Skeleton key={i} className="h-8 w-24 rounded-full" />)}
+          </div>
+        </div>
+        {/* Odds skeleton */}
+        <div className="px-3 pt-4">
+          <div className="rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm">
+            <Skeleton className="mb-3 h-3 w-24" />
+            <div className="flex gap-2">
+              {[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 flex-1 rounded-lg" />)}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!event) {
-    return <p className="py-12 text-center text-sm text-gray-500">Event not found.</p>;
+    return (
+      <div className="min-h-screen bg-orange-50/40 pb-24">
+        <ErrorState message="Event not found." />
+      </div>
+    );
   }
 
   return (

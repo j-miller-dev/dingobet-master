@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import api from "@/lib/api";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
   ArrowDownTrayIcon,
   ArrowUpTrayIcon,
@@ -92,7 +93,13 @@ export default function WalletPage() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center text-gray-400">Loading…</div>;
+    return (
+      <div className="min-h-screen bg-orange-50/40 pb-24 px-4 pt-6 space-y-4">
+        <Skeleton className="h-32 w-full rounded-2xl" />
+        <Skeleton className="h-48 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </div>
+    );
   }
 
   return (

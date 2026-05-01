@@ -6,6 +6,7 @@ import { useSports } from "@/hooks/useSports";
 import { useAuthStore } from "@/store/authStore";
 import LandingPage from "@/components/home/LandingPage";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
+import { SkeletonSportRow, ErrorState } from "@/components/ui/Skeleton";
 
 // ─── Sport icon map (emoji placeholders — swap for real icons later) ──────────
 
@@ -39,7 +40,7 @@ export default function Home() {
   const token = useAuthStore((s) => s.token);
   const hydrated = useAuthStore((s) => s._hydrated);
   const router = useRouter();
-  const { data: sports = [], isLoading } = useSports();
+  const { data: sports = [], isLoading, isError } = useSports();
   const [tab, setTab] = useState<Tab>("sports");
 
   // Deduplicate into unique groups, sorted alphabetically
@@ -82,15 +83,15 @@ export default function Home() {
 
       {/* ── Sport list ── */}
       <div className="px-3 pt-4 space-y-2">
-        {isLoading && (
-          <p className="py-12 text-center text-sm text-gray-400">Loading…</p>
-        )}
+        {isError && <ErrorState message="Failed to load sports." />}
 
-        {!isLoading && activeGroups.length === 0 && (
+        {isLoading ? (
+          [0, 1, 2, 3, 4, 5].map((i) => <SkeletonSportRow key={i} />)
+        ) : activeGroups.length === 0 ? (
           <p className="py-12 text-center text-sm text-gray-400">
             {tab === "racing" ? "No racing markets available." : "No sports available."}
           </p>
-        )}
+        ) : null}
 
         {activeGroups.map((group) => (
           <button
