@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import api from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
+import SplashScreen from "@/components/ui/SplashScreen";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,6 +30,8 @@ export default function LoginPage() {
   };
 
   return (
+    <>
+    {isPending && <SplashScreen />}
     <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h1 className="mx-auto text-center text-3xl font-bold text-orange-600">
@@ -106,5 +109,6 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }

@@ -20,6 +20,7 @@ function formatMatchup(homeTeam: string, awayTeam: string, sportGroup: string) {
     : `${homeTeam} v ${awayTeam}`;
 }
 import BetToast from "@/components/ui/BetToast";
+import BetReceiptToast, { type BetReceiptData } from "@/components/ui/BetReceiptToast";
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"];
 
@@ -28,6 +29,7 @@ const BetSlip = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [betReceipt, setBetReceipt] = useState<BetReceiptData | null>(null);
   const [mode, setMode] = useState<"multi" | "singles">("multi");
 
   // Swipe down to close
@@ -58,8 +60,7 @@ const BetSlip = () => {
     setLoading(true);
     try {
       if (mode === "singles") {
-        // Fire one request per selection
-        await Promise.all(
+        const results = await Promise.all(
           selections.map((s) =>
             api.post("/bets", {
               stake: stakeNum,
@@ -67,12 +68,28 @@ const BetSlip = () => {
             }),
           ),
         );
+        const first = results[0].data;
+        setBetReceipt({
+          id:             first.id,
+          placedAt:       first.placedAt,
+          stake:          Number(first.stake),
+          totalOdds:      Number(first.totalOdds),
+          potentialPayout: Number(first.potentialPayout),
+          count:          selections.length,
+        });
       } else {
-        await api.post("/bets", {
+        const { data } = await api.post("/bets", {
           stake: stakeNum,
           legs: selections.map(({ eventId, bookmaker, market, selection }) => ({
             eventId, bookmaker, market, selection,
           })),
+        });
+        setBetReceipt({
+          id:             data.id,
+          placedAt:       data.placedAt,
+          stake:          Number(data.stake),
+          totalOdds:      Number(data.totalOdds),
+          potentialPayout: Number(data.potentialPayout),
         });
       }
       clear();
@@ -97,12 +114,18 @@ const BetSlip = () => {
     setStake(next);
   };
 
-  if (!isOpen) return <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />;
+  if (!isOpen) return (
+    <>
+      <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />
+      <BetReceiptToast receipt={betReceipt} onClose={() => setBetReceipt(null)} />
+    </>
+  );
 
   if (selections.length === 0) {
     return (
       <>
         <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />
+        <BetReceiptToast receipt={betReceipt} onClose={() => setBetReceipt(null)} />
         <div
           className="fixed bottom-[68px] left-0 right-0 z-40 rounded-t-2xl bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.12)]"
           onTouchStart={handleTouchStart}
@@ -133,6 +156,7 @@ const BetSlip = () => {
   return (
     <>
       <BetToast show={showSuccess} onClose={() => setShowSuccess(false)} />
+      <BetReceiptToast receipt={betReceipt} onClose={() => setBetReceipt(null)} />
 
       <div
         className="fixed bottom-[68px] left-0 right-0 z-40 flex flex-col max-h-[80dvh] overflow-y-auto rounded-t-2xl bg-white shadow-[0_-4px_24px_rgba(0,0,0,0.12)]"
