@@ -22,30 +22,24 @@ export default function BetToast({ show, onClose }: BetToastProps) {
   return (
     <div
       aria-live="assertive"
-      className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center px-4 py-6"
+      className="pointer-events-none fixed left-0 right-0 top-14 z-50 px-3"
     >
       <Transition show={show}>
-        <div className="pointer-events-auto w-full max-w-sm rounded-lg bg-white shadow-lg outline-1 outline-black/5 transition data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-closed:data-enter:scale-95 data-leave:duration-150 data-leave:ease-in">
-          <div className="p-4">
-            <div className="flex items-start">
-              <div className="shrink-0">
-                <CheckCircleIcon aria-hidden="true" className="size-6 text-green-400" />
-              </div>
-              <div className="ml-3 w-0 flex-1 pt-0.5">
-                <p className="text-sm font-medium text-gray-900">Bet placed!</p>
-                <p className="mt-1 text-sm text-gray-500">Your bet has been successfully placed. Good luck!</p>
-              </div>
-              <div className="ml-4 flex shrink-0">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="inline-flex rounded-md text-gray-400 hover:text-gray-500 focus:outline-2 focus:outline-offset-2 focus:outline-orange-500"
-                >
-                  <span className="sr-only">Close</span>
-                  <XMarkIcon aria-hidden="true" className="size-5" />
-                </button>
-              </div>
+        <div className="pointer-events-auto w-full rounded-xl bg-white shadow-lg ring-1 ring-black/5 transition data-closed:-translate-y-2 data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-150 data-leave:ease-in">
+          <div className="flex items-center gap-3 px-4 py-3">
+            <CheckCircleIcon aria-hidden="true" className="h-5 w-5 shrink-0 text-green-500" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-900">Bet placed!</p>
+              <p className="text-xs text-gray-500">Successfully placed. Good luck!</p>
             </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <span className="sr-only">Close</span>
+              <XMarkIcon aria-hidden="true" className="size-5" />
+            </button>
           </div>
         </div>
       </Transition>
