@@ -207,7 +207,9 @@ export default function EventDetailPage() {
                           label: outcome.name === "home" ? event.homeTeam.name
                                : outcome.name === "away" ? event.awayTeam.name
                                : outcome.name,
-                          eventLabel: `${event.homeTeam.name} v ${event.awayTeam.name}`,
+                          homeTeam: event.homeTeam.name,
+                          awayTeam: event.awayTeam.name,
+                          sportGroup: event.sport.group,
                         });
                       }
                     }}

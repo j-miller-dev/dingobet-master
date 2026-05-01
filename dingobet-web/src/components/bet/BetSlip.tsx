@@ -10,6 +10,15 @@ const MARKET_LABELS: Record<string, string> = {
   spreads: "Handicap",
   totals:  "Totals",
 };
+
+// North American leagues use "Away @ Home" convention
+const NA_GROUPS = new Set(["Ice Hockey", "American Football", "Basketball", "Baseball"]);
+
+function formatMatchup(homeTeam: string, awayTeam: string, sportGroup: string) {
+  return NA_GROUPS.has(sportGroup)
+    ? `${awayTeam} @ ${homeTeam}`
+    : `${homeTeam} v ${awayTeam}`;
+}
 import BetToast from "@/components/ui/BetToast";
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"];
@@ -172,12 +181,12 @@ const BetSlip = () => {
               className="flex items-center justify-between rounded-xl bg-orange-50 px-3 py-2.5"
             >
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-gray-900">
+                <p className="text-xs text-gray-400">{MARKET_LABELS[s.market] ?? s.market}</p>
+                <p className="truncate text-sm font-bold text-gray-900">
                   {s.label}{s.point !== undefined ? ` ${s.point > 0 ? "+" : ""}${s.point}` : ""}
                 </p>
-                <p className="truncate text-xs text-gray-400">{s.eventLabel}</p>
-                <p className="text-xs text-gray-400">
-                  {MARKET_LABELS[s.market] ?? s.market}
+                <p className="truncate text-xs text-gray-400">
+                  {formatMatchup(s.homeTeam, s.awayTeam, s.sportGroup)}
                 </p>
                 {mode === "singles" && stakeNum > 0 && (
                   <p className="text-xs font-semibold text-green-600 mt-0.5">

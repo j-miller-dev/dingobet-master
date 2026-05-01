@@ -10,7 +10,9 @@ interface BetSlipSelection {
   selection: string;
   price: number;
   label: string;       // resolved team/outcome name e.g. "Boston Bruins"
-  eventLabel: string;  // matchup e.g. "Toronto Maple Leafs v Boston Bruins"
+  homeTeam: string;    // for matchup formatting
+  awayTeam: string;
+  sportGroup: string;  // e.g. "Ice Hockey" — drives home v away vs away @ home
   point?: number;      // handicap/total line e.g. -1.5
 }
 
