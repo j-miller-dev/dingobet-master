@@ -10,6 +10,7 @@ import { SkeletonBetCard, ErrorState } from "@/components/ui/Skeleton";
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface BetEvent {
+  commenceTime: string;
   homeTeam: { name: string };
   awayTeam: { name: string };
   sport: { title: string };
@@ -56,6 +57,16 @@ function formatDate(iso: string) {
     day: "numeric",
     month: "short",
     year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatGameTime(iso: string) {
+  return new Date(iso).toLocaleString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -173,6 +184,11 @@ export default function MyBetsPage() {
                           <p className="mt-0.5 text-xs text-gray-400">{matchup}</p>
                         )}
                         <p className="mt-0.5 text-xs text-gray-400">{leg.event.sport.title}</p>
+                        {leg.status === "PENDING" && (
+                          <p className="mt-0.5 text-xs font-medium text-orange-500">
+                            Starts {formatGameTime(leg.event.commenceTime)}
+                          </p>
+                        )}
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
                         <span className="text-sm font-bold text-gray-900">{leg.odds}</span>
