@@ -25,9 +25,8 @@ export async function settleEvent(
     include: { homeTeam: true, awayTeam: true },
   });
   if (!event) throw new Error(`Event ${eventId} not found`);
-  if (event.status === "COMPLETED") return 0; // already settled — no-op
 
-  // Mark the event completed.
+  // Mark the event completed (idempotent if already COMPLETED).
   await prisma.event.update({
     where: { id: eventId },
     data: { status: "COMPLETED", result },
@@ -41,6 +40,12 @@ export async function settleEvent(
         ? event.awayTeam.name
         : null;
 
+  // For totals: HOME_WIN → Over wins, AWAY_WIN → Under wins, DRAW → void.
+  const totalsWinner =
+    result === "HOME_WIN" ? "Over"
+    : result === "AWAY_WIN" ? "Under"
+    : null;
+
   // All pending legs on this event, with their parent bet included.
   const legs = await prisma.betLeg.findMany({
     where: { eventId, status: "PENDING" },
@@ -50,9 +55,22 @@ export async function settleEvent(
   let settledCount = 0;
 
   for (const leg of legs) {
+    // Normalise legacy "home"/"away" selection names to actual team names.
+    const normalised =
+      leg.selection === "home" ? event.homeTeam.name
+      : leg.selection === "away" ? event.awayTeam.name
+      : leg.selection;
+
     // Determine this leg's outcome.
-    const legOutcome =
-      result === "DRAW" ? "VOID" : leg.selection === winningTeam ? "WON" : "LOST";
+    let legOutcome: "WON" | "LOST" | "VOID";
+    if (result === "DRAW") {
+      legOutcome = "VOID";
+    } else if (normalised === "Over" || normalised === "Under") {
+      // Totals leg: Over wins on HOME_WIN, Under wins on AWAY_WIN.
+      legOutcome = normalised === totalsWinner ? "WON" : "LOST";
+    } else {
+      legOutcome = normalised === winningTeam ? "WON" : "LOST";
+    }
 
     let settledBetStatus: string | null = null;
     let settledPayout: number | null = null;

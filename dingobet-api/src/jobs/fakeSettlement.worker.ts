@@ -181,18 +181,21 @@ export const fakeSettlementWorker = new Worker(
   async (_job) => {
     console.log("[fake-settlement] scanning for events to settle...");
 
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
 
     const candidates = await prisma.event.findMany({
       where: {
         OR: [
           { status: "LIVE" },
-          { status: "UPCOMING", commenceTime: { lte: tenMinutesAgo } },
+          { status: "UPCOMING", commenceTime: { lte: twoMinutesAgo } },
+          // Orphaned: already COMPLETED but still has unsettled legs
+          { status: "COMPLETED", betLegs: { some: { status: "PENDING" } } },
         ],
       },
       select: {
         id: true,
         status: true,
+        result: true,
         homeTeam: { select: { name: true } },
         awayTeam: { select: { name: true } },
       },
@@ -206,9 +209,13 @@ export const fakeSettlementWorker = new Worker(
 
     let settled = 0;
     for (const event of candidates) {
-      if (Math.random() > 0.6) continue; // stagger — try again next poll
+      // Don't stagger orphaned legs — settle them immediately.
+      if (event.status !== "COMPLETED" && Math.random() > 0.6) continue;
 
-      const result = randomResult();
+      // Reuse the stored result for already-completed events (orphaned leg recovery).
+      const result = (event.status === "COMPLETED" && event.result)
+        ? event.result as EventResult
+        : randomResult();
       try {
         const legsSettled = await settleEvent(event.id, result);
         console.log(
