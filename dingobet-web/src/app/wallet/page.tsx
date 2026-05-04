@@ -69,7 +69,7 @@ export default function WalletPage() {
       api.get("/wallet/transactions"),
     ]).then(([w, t]) => {
       setBalance(Number(w.data.balance));
-      setTransactions(t.data);
+      setTransactions(t.data.data);
     }).finally(() => setLoading(false));
   }, [token, router]);
 
@@ -82,7 +82,7 @@ export default function WalletPage() {
       setBalance(Number(res.data.balance));
       // Prepend a synthetic tx so the list updates instantly
       const [txRes] = await Promise.all([api.get("/wallet/transactions")]);
-      setTransactions(txRes.data);
+      setTransactions(txRes.data.data);
       setMode(null);
       setAmount("");
     } catch (err: any) {

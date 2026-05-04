@@ -31,20 +31,26 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/transactions", async (req: Request, res: Response) => {
   try {
     const id = req.user!.id;
-    const transactions = await prisma.transaction.findMany({
-      where: { userId: id },
-      select: {
-        id: true,
-        type: true,
-        amount: true,
-        balanceBefore: true,
-        balanceAfter: true,
-        status: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(transactions);
+    const limit  = Math.min(parseInt(req.query.limit  as string) || 20, 200);
+    const offset = Math.max(parseInt(req.query.offset as string) || 0,  0);
+
+    const where = { userId: id };
+    const [transactions, total] = await Promise.all([
+      prisma.transaction.findMany({
+        where,
+        select: {
+          id: true, type: true, amount: true,
+          balanceBefore: true, balanceAfter: true,
+          status: true, createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.transaction.count({ where }),
+    ]);
+
+    res.json({ data: transactions, total, hasMore: offset + transactions.length < total });
   } catch (error) {
     return res.status(500).json({ message: "Server Error" });
   }

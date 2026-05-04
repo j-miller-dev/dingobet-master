@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useCallback } from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import api from "@/lib/api";
 import { getSocket } from "@/lib/socket";
@@ -35,6 +35,12 @@ interface Bet {
   totalOdds: string;
   potentialPayout: string;
   legs: BetLeg[];
+}
+
+interface BetsPage {
+  data: Bet[];
+  total: number;
+  hasMore: boolean;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -72,8 +78,12 @@ function formatGameTime(iso: string) {
   });
 }
 
-async function fetchBets(): Promise<Bet[]> {
-  const { data } = await api.get("/bets");
+const PAGE_SIZE = 15;
+
+async function fetchBetsPage(filter: Filter, offset: number): Promise<BetsPage> {
+  const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
+  if (filter !== "ALL") params.set("status", filter);
+  const { data } = await api.get(`/bets?${params}`);
   return data;
 }
 
@@ -82,12 +92,44 @@ async function fetchBets(): Promise<Bet[]> {
 export default function MyBetsPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<Filter>("ALL");
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const { data: bets = [], isLoading, isError } = useQuery({
-    queryKey: ["bets"],
-    queryFn: fetchBets,
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<BetsPage>({
+    queryKey: ["bets", filter],
+    queryFn: ({ pageParam }) => fetchBetsPage(filter, (pageParam as number) ?? 0),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.hasMore ? allPages.flatMap((p) => p.data).length : undefined,
   });
 
+  const bets = data?.pages.flatMap((p) => p.data) ?? [];
+
+  // Infinite scroll — load next page when sentinel enters viewport
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage, hasNextPage, isFetchingNextPage],
+  );
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(handleObserver, { threshold: 0.1 });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [handleObserver]);
+
+  // Invalidate when filter changes (reset to page 0 automatically via new queryKey)
   // Invalidate bets list when a bet settles via socket
   useEffect(() => {
     const socket = getSocket();
@@ -100,8 +142,6 @@ export default function MyBetsPage() {
     socket.on("bet:settled", handler);
     return () => { socket.off("bet:settled", handler); };
   }, [queryClient]);
-
-  const filtered = filter === "ALL" ? bets : bets.filter((b) => b.status === filter);
 
   return (
     <div className="min-h-screen bg-orange-50/40 pb-24">
@@ -134,13 +174,13 @@ export default function MyBetsPage() {
 
         {isError && <ErrorState message="Failed to load bets." onRetry={() => queryClient.invalidateQueries({ queryKey: ["bets"] })} />}
 
-        {!isLoading && !isError && filtered.length === 0 && (
+        {!isLoading && !isError && bets.length === 0 && (
           <p className="py-12 text-center text-sm text-gray-400">
             {filter === "ALL" ? "No bets placed yet." : `No ${filter.toLowerCase()} bets.`}
           </p>
         )}
 
-        {filtered.map((bet) => (
+        {bets.map((bet) => (
           <div
             key={bet.id}
             className="w-full rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm"
@@ -221,6 +261,16 @@ export default function MyBetsPage() {
             </div>
           </div>
         ))}
+
+        {/* Infinite scroll sentinel */}
+        <div ref={loadMoreRef} className="h-4" />
+
+        {isFetchingNextPage && (
+          <div className="space-y-3">
+            <SkeletonBetCard />
+            <SkeletonBetCard />
+          </div>
+        )}
       </div>
     </div>
   );

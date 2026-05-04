@@ -176,19 +176,33 @@ router.post(
 router.get("/", authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
-    const { status } = req.query;
-    const bets = await prisma.bet.findMany({
-      where: { userId, ...(status ? { status: status as "PENDING" | "WON" | "LOST" | "VOID" | "CASHED_OUT" | "PARTIALLY_SETTLED" } : {}) },
-      include: {
-        legs: {
-          include: {
-            event: { include: { homeTeam: true, awayTeam: true, sport: true } },
+    const { status, limit: limitStr, offset: offsetStr } = req.query;
+    const limit  = Math.min(parseInt(limitStr  as string) || 20, 200);
+    const offset = Math.max(parseInt(offsetStr as string) || 0,  0);
+
+    const where = {
+      userId,
+      ...(status ? { status: status as "PENDING" | "WON" | "LOST" | "VOID" | "CASHED_OUT" | "PARTIALLY_SETTLED" } : {}),
+    };
+
+    const [bets, total] = await Promise.all([
+      prisma.bet.findMany({
+        where,
+        include: {
+          legs: {
+            include: {
+              event: { include: { homeTeam: true, awayTeam: true, sport: true } },
+            },
           },
         },
-      },
-      orderBy: { placedAt: "desc" },
-    });
-    res.json(bets);
+        orderBy: { placedAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.bet.count({ where }),
+    ]);
+
+    res.json({ data: bets, total, hasMore: offset + bets.length < total });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
