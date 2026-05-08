@@ -8,26 +8,43 @@ import LandingPage from "@/components/home/LandingPage";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { SkeletonSportRow, ErrorState } from "@/components/ui/Skeleton";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import {
+  faFootballBall,
+  faBaseballBall,
+  faBasketballBall,
+  faFutbol,
+  faTableTennisPaddleBall,
+  faHockeyPuck,
+  faVolleyball,
+  faGolfBallTee,
+  faHorse,
+  faDog,
+  faMedal,
+} from "@fortawesome/free-solid-svg-icons";
+
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 // ─── Sport icon map (emoji placeholders — swap for real icons later) ──────────
 
-const SPORT_ICONS: Record<string, string> = {
-  "American Football": "🏈",
-  "Aussie Rules":      "🏉",
-  "Baseball":          "⚾",
-  "Basketball":        "🏀",
-  "Boxing":            "🥊",
-  "Cricket":           "🏏",
-  "Golf":              "⛳",
-  "Ice Hockey":        "🏒",
-  "Mixed Martial Arts":"🥋",
-  "Rugby League":      "🏉",
-  "Rugby Union":       "🏉",
-  "Soccer":            "⚽",
-  "Tennis":            "🎾",
-  "Volleyball":        "🏐",
-  "Horse Racing":      "🏇",
-  "Greyhound Racing":  "🐕",
-  "Harness Racing":    "🐎",
+const SPORT_ICONS: Record<string, IconDefinition> = {
+  "American Football": faFootballBall,
+  "Aussie Rules": faFootballBall,
+  Baseball: faBaseballBall,
+  Basketball: faBasketballBall,
+  Boxing: faMedal,
+  Cricket: faBaseballBall,
+  Golf: faGolfBallTee,
+  "Ice Hockey": faHockeyPuck,
+  "Mixed Martial Arts": faMedal,
+  "Rugby League": faFootballBall,
+  "Rugby Union": faFootballBall,
+  Soccer: faFutbol,
+  Tennis: faTableTennisPaddleBall,
+  Volleyball: faVolleyball,
+  "Horse Racing": faHorse,
+  "Greyhound Racing": faDog,
+  "Harness Racing": faHorse,
 };
 
 const RACING_GROUPS = ["Horse Racing", "Greyhound Racing", "Harness Racing"];
@@ -69,13 +86,17 @@ export default function Home() {
               key={t}
               onClick={() => setTab(t)}
               className={[
-                "flex-1 py-3.5 text-sm font-semibold capitalize transition-colors",
+                "flex flex-1 items-center justify-center gap-2 py-3.5 text-sm font-semibold transition-all duration-200",
                 tab === t
-                  ? "border-b-2 border-orange-500 text-orange-600"
-                  : "text-gray-400 hover:text-gray-600",
+                  ? "border-b-2 border-orange-400 text-orange-500"
+                  : "text-gray-400 hover:text-gray-500",
               ].join(" ")}
             >
-              {t === "sports" ? "⚽ Sports" : "🏇 Racing"}
+              <span className={tab === t ? "text-orange-500" : "text-gray-400"}>
+                <FontAwesomeIcon icon={t === "sports" ? faFutbol : faHorse} />
+              </span>
+
+              <span>{t === "sports" ? "Sports" : "Racing"}</span>
             </button>
           ))}
         </div>
@@ -89,7 +110,9 @@ export default function Home() {
           [0, 1, 2, 3, 4, 5].map((i) => <SkeletonSportRow key={i} />)
         ) : activeGroups.length === 0 ? (
           <p className="py-12 text-center text-sm text-gray-400">
-            {tab === "racing" ? "No racing markets available." : "No sports available."}
+            {tab === "racing"
+              ? "No racing markets available."
+              : "No sports available."}
           </p>
         ) : null}
 
@@ -99,8 +122,10 @@ export default function Home() {
             onClick={() => router.push(`/sport/${encodeURIComponent(group)}`)}
             className="flex w-full items-center gap-4 rounded-xl bg-white px-4 py-4 shadow-sm active:bg-orange-50 transition-colors"
           >
-            <span className="text-2xl leading-none">
-              {SPORT_ICONS[group] ?? "🎯"}
+            <span className="text-xl text-orange-500">
+              {SPORT_ICONS[group] && (
+                <FontAwesomeIcon icon={SPORT_ICONS[group]} />
+              )}
             </span>
             <span className="flex-1 text-left text-base font-semibold text-gray-900">
               {group}

@@ -19,7 +19,7 @@ interface Props {
   onClose: () => void;
 }
 
-const AUTO_DISMISS_MS = 5000;
+const AUTO_DISMISS_MS = 3000;
 
 function formatTime(iso: string) {
   return new Date(iso).toLocaleTimeString("en-AU", {
@@ -54,15 +54,21 @@ export default function BetReceiptToast({ receipt, onClose }: Props) {
                       #{receipt.id.slice(-8).toUpperCase()}
                     </span>
                     {receipt.count && receipt.count > 1 && (
-                      <span className="ml-1.5 text-orange-400">×{receipt.count}</span>
+                      <span className="ml-1.5 text-orange-400">
+                        ×{receipt.count}
+                      </span>
                     )}
                   </p>
-                  <p className="shrink-0 text-xs text-gray-500">{formatTime(receipt.placedAt)}</p>
+                  <p className="shrink-0 text-xs text-gray-500">
+                    {formatTime(receipt.placedAt)}
+                  </p>
                 </div>
                 <div className="mt-0.5 flex items-center gap-2 text-xs">
                   <span className="text-gray-400">
                     Stake{" "}
-                    <span className="font-semibold text-gray-200">${receipt.stake.toFixed(2)}</span>
+                    <span className="font-semibold text-gray-200">
+                      ${receipt.stake.toFixed(2)}
+                    </span>
                   </span>
                   <span className="text-gray-700">·</span>
                   <span className="font-semibold text-orange-400">
