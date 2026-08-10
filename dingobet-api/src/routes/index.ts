@@ -8,6 +8,7 @@ import betsRoutes from './bets.routes.js';
 import walletRoutes from './wallet.routes.js';
 import adminRoutes from './admin.routes.js';
 import notificationsRoutes from './notifications.routes.js';
+import { walletLimiter, betsLimiter, adminLimiter } from '../middleware/rateLimiter.js';
 
 const router: Router = Router();
 
@@ -16,9 +17,9 @@ router.use('/users', userRoutes);
 router.use('/sports', sportsRoutes);
 router.use('/events', eventsRoutes);
 router.use('/odds', oddsRoutes);
-router.use('/bets', betsRoutes);
-router.use('/wallet', walletRoutes);
-router.use('/admin', adminRoutes);
+router.use('/bets', betsLimiter, betsRoutes);
+router.use('/wallet', walletLimiter, walletRoutes);
+router.use('/admin', adminLimiter, adminRoutes);
 router.use('/notifications', notificationsRoutes);
 
 export default router;
