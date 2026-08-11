@@ -15,7 +15,7 @@
     "typecheck": "pnpm -r typecheck"
   },
   "engines": {
-    "node": ">=20",
+    "node": ">=22",
     "pnpm": ">=9"
   },
   "pnpm": {
@@ -27,7 +27,8 @@
       "msw",
       "prisma",
       "sharp",
-      "unrs-resolver"
+      "unrs-resolver",
+      "@scarf/scarf"
     ]
   },
   "dependencies": {
