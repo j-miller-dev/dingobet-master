@@ -2,7 +2,7 @@
 # docker build -f dingobet-api/Dockerfile .
 
 # ─── Stage 1: Builder ────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN corepack enable
 
@@ -29,7 +29,7 @@ RUN pnpm --filter dingobet-api deploy --prod /prod/dingobet-api
 
 
 # ─── Stage 2: Production ─────────────────────────────────────────────────────
-FROM node:20-alpine AS production
+FROM node:22-alpine AS production
 
 RUN addgroup -S app && adduser -S app -G app
 
