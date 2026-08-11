@@ -1,4 +1,5 @@
 import "dotenv/config";
+import "./instrument.js";
 import { createServer } from "node:http";
 import app from "./app.js";
 import { initSocket } from "./lib/socket.js";

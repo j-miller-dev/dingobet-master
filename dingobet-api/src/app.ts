@@ -1,4 +1,5 @@
 import express, { Express } from "express";
+import * as Sentry from "@sentry/node";
 import cors from "cors";
 import helmet from "helmet";
 import routes from "./routes/index.js";
@@ -18,6 +19,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/api", routes);
 
+Sentry.setupExpressErrorHandler(app);
 // Global error handler LAST
 app.use(errorHandler);
 
