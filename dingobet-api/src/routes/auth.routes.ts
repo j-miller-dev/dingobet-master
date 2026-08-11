@@ -37,11 +37,8 @@ router.post(
         });
       }
 
-      if (!email || !password) {
-        return res.status(400).json({
-          message: "Email and password required",
-        });
-      }
+      // validate(loginSchema) middleware already rejects missing fields above
+      // if (!email || !password) { ... }
 
       const user = await prisma.user.findUnique({
         where: { email },
