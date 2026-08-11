@@ -158,6 +158,10 @@ async function replenishEvents(): Promise<void> {
 const queue = new Queue(QUEUE_NAME, { connection: redis });
 
 export async function startFakeSettlementQueue() {
+  if (process.env.NODE_ENV === "production") {
+    logger.info("[fake-settlement] skipped in production");
+    return;
+  }
   await queue.add(
     "fake-settle",
     {},
