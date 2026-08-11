@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { redis } from "../lib/redis.js";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { validate } from "../middleware/validate.middleware.js";
 import { authenticate } from "../middleware/auth.middleware.js";
@@ -28,6 +29,13 @@ router.post(
   async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
+      const lockKey = `login:lockout:${email}`;
+      const attempts = await redis.get(lockKey);
+      if (attempts && parseInt(attempts) >= 10) {
+        return res.status(429).json({
+          message: "Account temporarily locked. Try again in 15 minutes.",
+        });
+      }
 
       if (!email || !password) {
         return res.status(400).json({
@@ -48,6 +56,11 @@ router.post(
       const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
       if (!passwordMatch) {
+        await redis
+          .multi()
+          .incr(lockKey)
+          .expire(lockKey, 15 * 60)
+          .exec();
         return res.status(401).json({
           message: "Invalid credentials",
         });
@@ -83,6 +96,8 @@ router.post(
           expiresAt,
         },
       });
+
+      await redis.del(lockKey);
       res.json({
         accessToken,
         refreshToken,
@@ -235,50 +250,75 @@ router.post("/refresh", async (req: Request, res: Response) => {
  * PATCH /api/auth/change-password
  * Requires auth + current password verification
  */
-router.patch("/change-password", authenticate, async (req: Request, res: Response) => {
-  try {
-    const { currentPassword, newPassword } = req.body;
-    if (!currentPassword || !newPassword)
-      return res.status(400).json({ message: "Current and new password required" });
-    if (newPassword.length < 8)
-      return res.status(400).json({ message: "New password must be at least 8 characters" });
+router.patch(
+  "/change-password",
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword)
+        return res
+          .status(400)
+          .json({ message: "Current and new password required" });
+      if (newPassword.length < 8)
+        return res
+          .status(400)
+          .json({ message: "New password must be at least 8 characters" });
 
-    const user = await prisma.user.findUnique({ where: { id: req.user!.id } });
-    if (!user) return res.status(404).json({ message: "User not found" });
+      const user = await prisma.user.findUnique({
+        where: { id: req.user!.id },
+      });
+      if (!user) return res.status(404).json({ message: "User not found" });
 
-    const match = await bcrypt.compare(currentPassword, user.passwordHash);
-    if (!match) return res.status(400).json({ message: "Current password is incorrect" });
+      const match = await bcrypt.compare(currentPassword, user.passwordHash);
+      if (!match)
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
 
-    const hash = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({ where: { id: user.id }, data: { passwordHash: hash } });
+      const hash = await bcrypt.hash(newPassword, 10);
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { passwordHash: hash },
+      });
 
-    res.json({ message: "Password updated" });
-  } catch (error) {
-    logger.error({ err: error }, "auth change-password error");
-    res.status(500).json({ message: "Server error" });
-  }
-});
+      res.json({ message: "Password updated" });
+    } catch (error) {
+      logger.error({ err: error }, "auth change-password error");
+      res.status(500).json({ message: "Server error" });
+    }
+  },
+);
 
 /**
  * RESET PASSWORD ROUTE
  * PATCH /api/auth/reset-password
  * Authenticated — skips current password (simulates clicking a reset link)
  */
-router.patch("/reset-password", authenticate, async (req: Request, res: Response) => {
-  try {
-    const { newPassword } = req.body;
-    if (!newPassword || newPassword.length < 8)
-      return res.status(400).json({ message: "Password must be at least 8 characters" });
+router.patch(
+  "/reset-password",
+  authenticate,
+  async (req: Request, res: Response) => {
+    try {
+      const { newPassword } = req.body;
+      if (!newPassword || newPassword.length < 8)
+        return res
+          .status(400)
+          .json({ message: "Password must be at least 8 characters" });
 
-    const hash = await bcrypt.hash(newPassword, 10);
-    await prisma.user.update({ where: { id: req.user!.id }, data: { passwordHash: hash } });
+      const hash = await bcrypt.hash(newPassword, 10);
+      await prisma.user.update({
+        where: { id: req.user!.id },
+        data: { passwordHash: hash },
+      });
 
-    res.json({ message: "Password reset" });
-  } catch (error) {
-    logger.error({ err: error }, "auth reset-password error");
-    res.status(500).json({ message: "Server error" });
-  }
-});
+      res.json({ message: "Password reset" });
+    } catch (error) {
+      logger.error({ err: error }, "auth reset-password error");
+      res.status(500).json({ message: "Server error" });
+    }
+  },
+);
 
 /**
  * LOGOUT ROUTE
