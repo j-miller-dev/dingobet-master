@@ -3,6 +3,7 @@ import { redis } from "../lib/redis.js";
 import { prisma } from "../lib/prisma.js";
 import { settleEvent } from "../services/settlement.service.js";
 import { TEAMS_BY_SPORT, SPORT_CONFIG } from "../data/teams.js";
+import logger from "../lib/logger.js";
 
 const QUEUE_NAME = "fake-settlement";
 const POLL_INTERVAL_MS = 2 * 60 * 1000; // every 2 minutes
@@ -62,7 +63,7 @@ async function replenishEvents(): Promise<void> {
     if (upcomingCount >= REPLENISH_MIN) continue;
 
     const needed = REPLENISH_TARGET - upcomingCount;
-    console.log(`[fake-settlement] replenishing ${needed} event(s) for ${sportId}`);
+    logger.info({ sport: sportId, needed }, "[fake-settlement] replenishing events");
 
     // Fetch only teams we know about for this sport
     const dbTeams = await prisma.team.findMany({
@@ -71,7 +72,7 @@ async function replenishEvents(): Promise<void> {
     });
 
     if (dbTeams.length < 2) {
-      console.warn(`[fake-settlement] not enough DB teams for ${sportId}, skipping`);
+      logger.warn({ sport: sportId }, "[fake-settlement] not enough DB teams, skipping");
       continue;
     }
 
@@ -147,7 +148,7 @@ async function replenishEvents(): Promise<void> {
         },
       });
 
-      console.log(`[fake-settlement] created: ${home.name} v ${away.name} (${sportId}, +${daysAhead}d)`);
+      logger.info({ sport: sportId, home: home.name, away: away.name, daysAhead }, "[fake-settlement] created event");
     }
   }
 }
@@ -169,9 +170,7 @@ export async function startFakeSettlementQueue() {
   // Also run immediately on startup.
   await queue.add("fake-settle-immediate", {});
 
-  console.log(
-    `[fake-settlement] repeating job registered (every ${POLL_INTERVAL_MS / 1000}s) — immediate run queued`,
-  );
+  logger.info(`[fake-settlement] repeating job registered (every ${POLL_INTERVAL_MS / 1000}s) — immediate run queued`);
 }
 
 // ─── Worker ───────────────────────────────────────────────────────────────────
@@ -179,7 +178,7 @@ export async function startFakeSettlementQueue() {
 export const fakeSettlementWorker = new Worker(
   QUEUE_NAME,
   async (_job) => {
-    console.log("[fake-settlement] scanning for events to settle...");
+    logger.info("[fake-settlement] scanning for events to settle...");
 
     const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
 
@@ -202,7 +201,7 @@ export const fakeSettlementWorker = new Worker(
     });
 
     if (candidates.length === 0) {
-      console.log("[fake-settlement] no events ready to settle");
+      logger.info("[fake-settlement] no events ready to settle");
       await replenishEvents();
       return;
     }
@@ -218,21 +217,19 @@ export const fakeSettlementWorker = new Worker(
         : randomResult();
       try {
         const legsSettled = await settleEvent(event.id, result);
-        console.log(
-          `[fake-settlement] settled ${event.homeTeam.name} v ${event.awayTeam.name} → ${result} (${legsSettled} legs)`,
-        );
+        logger.info({ home: event.homeTeam.name, away: event.awayTeam.name, result, legs: legsSettled }, "[fake-settlement] settled event");
         settled++;
       } catch (err) {
-        console.error(`[fake-settlement] failed to settle event ${event.id}:`, err);
+        logger.error({ err, eventId: event.id }, "[fake-settlement] failed to settle event");
       }
     }
 
-    console.log(`[fake-settlement] run complete — settled ${settled}/${candidates.length} candidates`);
+    logger.info({ settled, total: candidates.length }, "[fake-settlement] run complete");
     await replenishEvents();
   },
   { connection: redis },
 );
 
 fakeSettlementWorker.on("failed", (job, err) => {
-  console.error(`[fake-settlement] job ${job?.id} failed:`, err.message);
+  logger.error({ err, jobId: job?.id }, "[fake-settlement] job failed");
 });

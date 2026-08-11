@@ -1,3 +1,5 @@
+import logger from "../lib/logger.js";
+
 export const fetchSports = async (): Promise<any[]> => {
   try {
     const response = await fetch(
@@ -7,10 +9,10 @@ export const fetchSports = async (): Promise<any[]> => {
       throw new Error("Network response was not ok");
     }
     const data = (await response.json()) as any[];
-    console.log(data);
+    logger.debug({ count: data.length }, "fetchSports response");
     return data;
   } catch (error) {
-    console.error("There has been a problem with your fetch operation:", error);
+    logger.error({ err: error }, "fetchSports failed");
     throw error;
   }
 };
@@ -34,10 +36,10 @@ export const fetchEvents = async (sportKey: string): Promise<any[]> => {
       throw new Error("network response was not ok");
     }
     const data = (await response.json()) as any[];
-    console.log(data);
+    logger.debug({ sport: sportKey, count: data.length }, "fetchEvents response");
     return data;
   } catch (error) {
-    console.error("There has been a problem fetching your sport:", error);
+    logger.error({ err: error, sport: sportKey }, "fetchEvents failed");
     throw error;
   }
 };

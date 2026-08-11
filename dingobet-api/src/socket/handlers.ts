@@ -40,6 +40,7 @@
 import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
+import logger from "../lib/logger.js";
 
 export const registerSocketHandlers = (io: Server): void => {
   io.on("connection", async (socket: Socket) => {
@@ -68,8 +69,7 @@ export const registerSocketHandlers = (io: Server): void => {
       socket.on("subscribe:event", (eventId: string) => {
         socket.join(`event:${eventId}`);
       });
-      // log the connection (useful for debugging)
-      console.log(`Socket connected: userId=${userId}`);
+      logger.debug({ userId }, "Socket connected");
     } catch (error) {
       socket.disconnect();
       return;

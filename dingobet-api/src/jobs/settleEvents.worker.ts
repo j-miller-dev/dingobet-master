@@ -3,6 +3,7 @@ import { redis } from "../lib/redis.js";
 import { prisma } from "../lib/prisma.js";
 import { fetchScores } from "../services/odds.service.js";
 import { settleEvent, deriveResult } from "../services/settlement.service.js";
+import logger from "../lib/logger.js";
 
 const QUEUE_NAME = "settle-events";
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // every 5 minutes
@@ -29,7 +30,7 @@ export async function startSettlementQueue() {
   // One-shot job — fires immediately on startup so we don't wait the first interval.
   await queue.add("poll-scores-immediate", {});
 
-  console.log(`[settlement] repeating job registered (every ${POLL_INTERVAL_MS / 1000}s) — immediate run queued`);
+  logger.info(`[settlement] repeating job registered (every ${POLL_INTERVAL_MS / 1000}s) — immediate run queued`);
 }
 
 // ─── Worker ───────────────────────────────────────────────────────────────────
@@ -38,7 +39,7 @@ export async function startSettlementQueue() {
 export const settlementWorker = new Worker(
   QUEUE_NAME,
   async (_job) => {
-    console.log("[settlement] polling scores...");
+    logger.info("[settlement] polling scores...");
 
     // 1. Get all active sports that have been synced into the DB.
     const sports = await prisma.sport.findMany({ where: { isActive: true } });
@@ -53,10 +54,10 @@ export const settlementWorker = new Worker(
         // 401 means the API key is invalid or quota is exhausted — no point
         // trying remaining sports, they will all fail the same way.
         if (err?.message?.includes("401")) {
-          console.warn("[settlement] Odds API returned 401 — quota exhausted or invalid key, skipping run");
+          logger.warn("[settlement] Odds API returned 401 — quota exhausted or invalid key, skipping run");
           return;
         }
-        console.warn(`[settlement] fetchScores failed for ${sport.id}:`, err);
+        logger.warn({ err, sport: sport.id }, "[settlement] fetchScores failed");
         continue;
       }
 
@@ -79,7 +80,7 @@ export const settlementWorker = new Worker(
           apiEvent.scores,
         );
         if (!result) {
-          console.warn(`[settlement] could not derive result for event ${dbEvent.id}`);
+          logger.warn({ eventId: dbEvent.id }, "[settlement] could not derive result");
           continue;
         }
 
@@ -87,19 +88,19 @@ export const settlementWorker = new Worker(
         //    fires Socket.io notifications.
         try {
           const settled = await settleEvent(dbEvent.id, result);
-          console.log(`[settlement] settled event ${dbEvent.id} (${result}) — ${settled} legs`);
+          logger.info({ eventId: dbEvent.id, result, legs: settled }, "[settlement] event settled");
           totalSettled += settled;
         } catch (err) {
-          console.error(`[settlement] failed to settle event ${dbEvent.id}:`, err);
+          logger.error({ err, eventId: dbEvent.id }, "[settlement] failed to settle event");
         }
       }
     }
 
-    console.log(`[settlement] run complete — ${totalSettled} legs settled`);
+    logger.info({ totalSettled }, "[settlement] run complete");
   },
   { connection: redis },
 );
 
 settlementWorker.on("failed", (job, err) => {
-  console.error(`[settlement] job ${job?.id} failed:`, err.message);
+  logger.error({ err, jobId: job?.id }, "[settlement] job failed");
 });

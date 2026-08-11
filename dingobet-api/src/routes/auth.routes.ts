@@ -7,6 +7,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { loginSchema, registerSchema } from "../schemas/auth.schemas.js";
 import rateLimit from "express-rate-limit";
+import logger from "../lib/logger.js";
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -94,7 +95,7 @@ router.post(
         },
       });
     } catch (error) {
-      console.error(error);
+      logger.error({ err: error }, "auth error");
       res.status(500).json({ message: "Server error" });
     }
   },
@@ -160,7 +161,7 @@ router.post(
         userId: user.id,
       });
     } catch (error) {
-      console.error(error);
+      logger.error({ err: error }, "auth error");
       res.status(500).json({
         message: "Registration failed",
       });
@@ -224,7 +225,7 @@ router.post("/refresh", async (req: Request, res: Response) => {
 
     res.json({ accessToken, refreshToken: newRefreshToken });
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error }, "auth refresh error");
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -253,7 +254,7 @@ router.patch("/change-password", authenticate, async (req: Request, res: Respons
 
     res.json({ message: "Password updated" });
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error }, "auth change-password error");
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -274,7 +275,7 @@ router.patch("/reset-password", authenticate, async (req: Request, res: Response
 
     res.json({ message: "Password reset" });
   } catch (error) {
-    console.error(error);
+    logger.error({ err: error }, "auth reset-password error");
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -302,7 +303,7 @@ router.post("/logout", async (req: Request, res: Response) => {
     ) {
       return res.json({ message: "Logged out" });
     }
-    console.error(error);
+    logger.error({ err: error }, "auth logout error");
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -7,6 +7,7 @@ import { startSettlementQueue } from "./jobs/settleEvents.worker.js";
 import { startLiveEventsQueue } from "./jobs/liveEvents.worker.js";
 import { startSessionCleanupQueue } from "./jobs/sessionCleanup.worker.js";
 import { startFakeSettlementQueue } from "./jobs/fakeSettlement.worker.js";
+import logger from "./lib/logger.js";
 
 const PORT = process.env.PORT || 4000;
 
@@ -15,7 +16,7 @@ const io = initSocket(server);
 registerSocketHandlers(io);
 
 server.listen(PORT, async () => {
-  console.log(`DingoBet API running on http://localhost:${PORT}`);
+  logger.info(`DingoBet API running on http://localhost:${PORT}`);
   await startSettlementQueue();
   await startLiveEventsQueue();
   await startSessionCleanupQueue();

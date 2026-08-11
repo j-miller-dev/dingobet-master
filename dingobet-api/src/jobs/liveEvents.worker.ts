@@ -1,6 +1,7 @@
 import { Queue, Worker } from "bullmq";
 import { redis } from "../lib/redis.js";
 import { prisma } from "../lib/prisma.js";
+import logger from "../lib/logger.js";
 
 const QUEUE_NAME = "live-events";
 const POLL_INTERVAL_MS = 60 * 1000; // every minute
@@ -16,7 +17,7 @@ export async function startLiveEventsQueue() {
       jobId: "check-live-repeating",
     },
   );
-  console.log("[live-events] repeating job registered (every 60s)");
+  logger.info("[live-events] repeating job registered (every 60s)");
 }
 
 export const liveEventsWorker = new Worker(
@@ -31,12 +32,12 @@ export const liveEventsWorker = new Worker(
       data: { status: "LIVE" },
     });
     if (result.count > 0) {
-      console.log(`[live-events] flipped ${result.count} events to LIVE`);
+      logger.info({ count: result.count }, "[live-events] flipped events to LIVE");
     }
   },
   { connection: redis },
 );
 
 liveEventsWorker.on("failed", (job, err) => {
-  console.error(`[live-events] job ${job?.id} failed:`, err.message);
+  logger.error({ err, jobId: job?.id }, "[live-events] job failed");
 });
