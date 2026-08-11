@@ -19,7 +19,8 @@ RUN pnpm install --frozen-lockfile --filter dingobet-api...
 COPY dingobet-api ./dingobet-api
 
 # Generate Prisma client (outputs to prisma/generated/prisma/)
-RUN pnpm --filter dingobet-api exec prisma generate
+# DATABASE_URL is required by Prisma 7 at generate time — dummy value is fine here
+RUN DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy pnpm --filter dingobet-api exec prisma generate
 
 # Compile TypeScript → dist/
 RUN pnpm --filter dingobet-api build
