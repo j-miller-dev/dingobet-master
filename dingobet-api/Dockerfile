@@ -28,7 +28,8 @@ RUN DATABASE_URL=postgresql://dummy:dummy@dummy:5432/dummy \
 RUN pnpm --filter dingobet-api build
 
 # Create a clean production deployment (prod deps only, no symlinks)
-RUN pnpm --filter dingobet-api deploy --prod /prod/dingobet-api
+# --legacy required by pnpm v10 for non-injected workspaces
+RUN pnpm --filter dingobet-api deploy --prod --legacy /prod/dingobet-api
 
 
 # ─── Stage 2: Production ─────────────────────────────────────────────────────
