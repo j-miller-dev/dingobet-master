@@ -64,10 +64,6 @@ router.post(
       const userId = req.user!.id;
       const { amount } = req.body;
 
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
-      }
-
       const wallet = await prisma.wallet.findUnique({
         where: { userId },
       });
@@ -111,7 +107,7 @@ router.post(
 
       res.json({ balance: updated.balance, currency: updated.currency });
     } catch (error) {
-      res.status(500).json({ message: "server error" });
+      res.status(500).json({ message: "Server error" });
     }
   },
 );
@@ -123,9 +119,6 @@ router.post(
     try {
       const userId = req.user!.id;
       const { amount } = req.body;
-
-      if (!amount || amount <= 0)
-        return res.status(400).json({ message: "Invalid amount" });
 
       const wallet = await prisma.wallet.findUnique({ where: { userId } });
       if (!wallet) return res.status(404).json({ message: "Wallet not found" });
