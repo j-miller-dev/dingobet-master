@@ -41,6 +41,7 @@ import { Server, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { prisma } from "../lib/prisma.js";
 import logger from "../lib/logger.js";
+import { env } from "../config/env.js";
 
 export const registerSocketHandlers = (io: Server): void => {
   io.on("connection", async (socket: Socket) => {
@@ -52,7 +53,7 @@ export const registerSocketHandlers = (io: Server): void => {
     }
     // verify the token
     try {
-      const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      const payload = jwt.verify(token, env.JWT_SECRET) as {
         id: string;
       };
       const userId = payload.id;

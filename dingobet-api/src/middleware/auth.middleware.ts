@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
 
 // Extend Express's Request type so TypeScript knows about req.user:
 declare global {
@@ -24,7 +25,7 @@ export const authenticate = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+    const decoded = jwt.verify(token, env.JWT_SECRET) as {
       sub: string;
       email: string;
       role: string;

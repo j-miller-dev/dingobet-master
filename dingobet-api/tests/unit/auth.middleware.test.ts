@@ -9,6 +9,12 @@ vi.mock("jsonwebtoken", () => ({
   },
 }));
 
+vi.mock("../../src/config/env.js", () => ({
+  env: {
+    JWT_SECRET: "test-secret",
+  },
+}));
+
 // Helpers - fake the three Express arguments
 const makeReq = (authHeader?: string) =>
   ({ headers: { authorization: authHeader } }) as unknown as Request;

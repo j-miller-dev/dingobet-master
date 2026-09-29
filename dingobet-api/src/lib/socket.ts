@@ -8,6 +8,7 @@ import {
 
 // Server is the Socket.io server class.
 import { Server } from "socket.io";
+import { env } from "../config/env.js";
 
 // Module-level singleton — null until initSocket() is called.
 // Same pattern as prisma.ts — one shared instance for the whole app.
@@ -19,7 +20,7 @@ export function initSocket(
   server: HttpServer<typeof IncomingMessage, typeof ServerResponse>,
 ): Server {
   // your code here
-  io = new Server(server, { cors: { origin: process.env.FRONTEND_URL } });
+  io = new Server(server, { cors: { origin: env.FRONTEND_URL } });
 
   return io;
 }
