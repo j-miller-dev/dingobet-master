@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { env } from "./config/env.js";
 import "./instrument.js";
 import { createServer } from "node:http";
 import app from "./app.js";
@@ -10,7 +11,7 @@ import { startSessionCleanupQueue } from "./jobs/sessionCleanup.worker.js";
 import { startFakeSettlementQueue } from "./jobs/fakeSettlement.worker.js";
 import logger from "./lib/logger.js";
 
-const PORT = process.env.PORT || 4000;
+const PORT = env.PORT;
 
 const server = createServer(app);
 const io = initSocket(server);
