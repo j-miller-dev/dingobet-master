@@ -3,6 +3,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { validate } from "../middleware/validate.middleware.js";
 import { placeBetSchema } from "../schemas/bets.schema.js";
+import { paginationSchema } from "../schemas/pagination.schemas.js";
 
 const router: Router = Router();
 
@@ -176,9 +177,11 @@ router.post(
 router.get("/", authenticate, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
-    const { status, limit: limitStr, offset: offsetStr } = req.query;
-    const limit  = Math.min(parseInt(limitStr  as string) || 20, 200);
-    const offset = Math.max(parseInt(offsetStr as string) || 0,  0);
+    const { status } = req.query;
+    const parsed = paginationSchema.safeParse(req.query);
+    if (!parsed.success)
+      return res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
+    const { limit, offset } = parsed.data;
 
     const where = {
       userId,

@@ -3,6 +3,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { Router, Request, Response } from "express";
 import { validate } from "../middleware/validate.middleware.js";
 import { amountSchema } from "../schemas/wallet.schemas.js";
+import { paginationSchema } from "../schemas/pagination.schemas.js";
 import { getIO } from "../lib/socket.js";
 
 const router: Router = Router();
@@ -31,8 +32,10 @@ router.get("/", async (req: Request, res: Response) => {
 router.get("/transactions", async (req: Request, res: Response) => {
   try {
     const id = req.user!.id;
-    const limit  = Math.min(parseInt(req.query.limit  as string) || 20, 200);
-    const offset = Math.max(parseInt(req.query.offset as string) || 0,  0);
+    const parsed = paginationSchema.safeParse(req.query);
+    if (!parsed.success)
+      return res.status(400).json({ errors: parsed.error.flatten().fieldErrors });
+    const { limit, offset } = parsed.data;
 
     const where = { userId: id };
     const [transactions, total] = await Promise.all([

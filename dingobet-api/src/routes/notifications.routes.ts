@@ -27,7 +27,7 @@ router.get("/", authenticate, async (req: Request, res: Response) => {
 
     return res.status(200).json({ notifications, unreadCount });
   } catch (error) {
-    return res.status(400).json({ message: "No notifications to show." });
+    return res.status(500).json({ message: "Server error" });
   }
 });
 

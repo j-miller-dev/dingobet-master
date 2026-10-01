@@ -1,6 +1,8 @@
 import { authenticate } from "../middleware/auth.middleware.js";
 import { prisma } from "../lib/prisma.js";
 import { Router, Request, Response } from "express";
+import { validate } from "../middleware/validate.middleware.js";
+import { updateProfileSchema, addFavouriteSchema } from "../schemas/user.schemas.js";
 
 const router: Router = Router();
 
@@ -55,7 +57,7 @@ router.get("/me", authenticate, async (req: Request, res: Response) => {
  * 4. Return the updated user
  */
 
-router.patch("/me", authenticate, async (req: Request, res: Response) => {
+router.patch("/me", authenticate, validate(updateProfileSchema), async (req: Request, res: Response) => {
   try {
     const id = req.user!.id;
     const { firstName, lastName, phone, avatarUrl } = req.body;
@@ -82,7 +84,7 @@ router.get("/me/favourites", authenticate, async (req: Request, res: Response) =
   }
 });
 
-router.post("/me/favourites", authenticate, async (req: Request, res: Response) => {
+router.post("/me/favourites", authenticate, validate(addFavouriteSchema), async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const { sportId } = req.body;
