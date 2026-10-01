@@ -46,7 +46,7 @@ router.get("/:eventId", authenticate, async (req: Request, res: Response) => {
 
     res.json(snapshot);
   } catch (error) {
-    res.status(500).json({ message: "Server contact failed" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 export default router;

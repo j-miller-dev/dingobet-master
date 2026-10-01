@@ -2,7 +2,7 @@ import { Router } from "express";
 import rateLimit from "express-rate-limit";
 import { validate } from "../middleware/validate.middleware.js";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { loginSchema, registerSchema } from "../schemas/auth.schemas.js";
+import { loginSchema, registerSchema, refreshTokenSchema } from "../schemas/auth.schemas.js";
 import {
   login,
   register,
@@ -22,7 +22,7 @@ const router = Router();
 
 router.post("/login", authLimiter, validate(loginSchema), login);
 router.post("/register", authLimiter, validate(registerSchema), register);
-router.post("/refresh", refresh);
+router.post("/refresh", validate(refreshTokenSchema), refresh);
 router.patch("/change-password", authenticate, changePasswordHandler);
 router.patch("/reset-password", authenticate, resetPasswordHandler);
 router.post("/logout", logout);

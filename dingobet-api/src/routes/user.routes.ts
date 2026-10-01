@@ -103,7 +103,8 @@ router.delete("/me/favourites/:sportId", authenticate, async (req: Request, res:
       where: { userId_sportId: { userId, sportId } },
     });
     res.status(204).send();
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === "P2025") return res.status(404).json({ message: "Favourite not found" });
     res.status(500).json({ message: "Server error" });
   }
 });

@@ -180,16 +180,16 @@ export default function ProfilePage() {
     if (!token) router.push("/login");
   }, [token, router]);
 
-  // Fetch bets when history tab is opened
+  // Fetch bets on mount so stats are populated immediately
   useEffect(() => {
-    if (activeTab !== "history" || bets.length > 0) return;
+    if (bets.length > 0) return;
     setBetsLoading(true);
     api
       .get("/bets")
-      .then((res) => setBets(res.data))
+      .then((res) => setBets(res.data.data))
       .catch(() => setBetsError("Failed to load bets"))
       .finally(() => setBetsLoading(false));
-  }, [activeTab, bets.length]);
+  }, [bets.length]);
 
   if (!user) return null;
 
